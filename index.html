@@ -1,5 +1,15 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#120e1c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Invocateurs">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
 <title>Duel des Invocateurs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@600;800&family=Barlow+Semi+Condensed:wght@400;600;700&display=swap">
@@ -14,13 +24,18 @@
   --body:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
   color-scheme:dark;
 }
-html,body{height:100%}
+html,body{height:100%;overscroll-behavior:none}
+@supports(height:100dvh){html,body{height:100dvh}}
 [hidden]{display:none!important}
 .hand>*,.deck>*,.reveal>*,.cell{min-width:0}
 .card .art{position:relative}
 .card .art img{position:absolute;inset:0}
 body{background:radial-gradient(120% 80% at 50% 0%,var(--felt),var(--table) 70%);background-color:var(--table);color:var(--ink);font-family:var(--body);font-size:15px;-webkit-tap-highlight-color:transparent;user-select:none;overflow:hidden}
 #app{max-width:480px;margin:0 auto;height:100%;display:flex;flex-direction:column;padding-inline:16px;box-sizing:border-box}
+body.battle #app{padding-inline:6px}
+.fsbtn{background:var(--table-2);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font-size:15px;border-radius:99px;line-height:1}
+.install{margin-top:14px;background:var(--table-2);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted);line-height:1.45}
+.install b{color:var(--ink)}
 button{font-family:var(--body);font-weight:700;font-size:15px;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;color:var(--table);background:var(--gold)}
 button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 button:disabled{opacity:.4;cursor:not-allowed}
@@ -206,6 +221,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="app">
   <div class="topbar" id="top">
     <div class="logo">Duel des Invocateurs</div>
+    <button class="fsbtn" id="fsbtn" title="Plein écran" hidden>⛶</button>
     <div class="purse"><span class="pill" id="tro">🏆 0</span><span class="pill" id="gold">🪙 0</span><span class="pill gem" id="gems">0</span></div>
   </div>
   <main id="main">
@@ -447,6 +463,7 @@ function renderHome(){
    <button class="daily" id="daily" ${can?'':'disabled'}><span>🎁 Coffre du jour<br><small class="note">Série : ${S.streak} jour${S.streak>1?'s':''} · grimpe jusqu'au 7ᵉ jour</small></span><em>${can?'+'+dailyReward()+' 🪙':'Demain'}</em></button>`;
   $('#play').onclick=startBattle;
   $('#mapbtn').onclick=showMaps;
+  $('#s-home').insertAdjacentHTML('beforeend',installTip());
   $('#daily').onclick=claimDaily;
 }
 const avgLv=()=>S.deck.reduce((s,id)=>s+S.cards[id].lv,0)/S.deck.length;
@@ -663,7 +680,21 @@ function tower(team,kind,x,y){
   const k=kind==='king';
   return{tower:true,kind,team,x,y,rad:k?1.6:1.25,hp:k?2600:1500,maxhp:k?2600:1500,dmg:k?65:55,rng:k?7:7.5,hit:k?1:.8,cd:0,air:true,active:!k,e:k?'👑':'🏹'};
 }
+/* ---------- Plein écran ---------- */
+const isStandalone=()=>window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const canFS=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)&&!isStandalone();
+const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function goFS(){if(!canFS()||inFS())return;const el=document.documentElement;
+  try{const r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'});if(r&&r.then)r.then(()=>{try{screen.orientation.lock('portrait').catch(()=>{})}catch(e){}}).catch(()=>{})}catch(e){}}
+function fsInit(){const b=$('#fsbtn');if(!b)return;b.hidden=!canFS();b.onclick=()=>{if(inFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else goFS()}}
+const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function installTip(){
+  if(isStandalone())return'';
+  if(isIOS())return`<div class="install">📲 <b>Jouer en plein écran :</b> touche le bouton <b>Partager</b> de Safari, puis <b>« Sur l'écran d'accueil »</b>. Le jeu s'ouvrira comme une vraie appli.</div>`;
+  return`<div class="install">📲 <b>Astuce :</b> menu <b>⋮</b> du navigateur → <b>« Ajouter à l'écran d'accueil »</b> pour jouer en plein écran comme une appli.</div>`;
+}
 function startBattle(){
+  goFS();document.body.classList.add('battle');
   const deck=shuffle([...S.deck]),adeck=shuffle([...STARTER,...UNLOCKS.slice(0,arenaOf(S.tro).i+1).flat(),...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/120)]).slice(0,8);G_map=mapOf(S.map);
   G={banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
      ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:0,eLv:enemyLv()};
@@ -1250,7 +1281,7 @@ function endBattle(){
       const x=box.querySelector('#x2');if(x)x.onclick=()=>fakeAd(()=>{S.gold+=gold*2;finish()});
     });
 }
-function finish(){persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
+function finish(){document.body.classList.remove('battle');persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
 function fakeAd(done){
   let t=3;
   const tick=()=>{
@@ -1269,6 +1300,8 @@ function closeModal(){$('#ov').hidden=true;$('#ov').innerHTML=''}
 /* ---------- Démarrage ---------- */
 function start(data){
   S=migrate((data&&data.S)||load());
+  try{fsInit()}catch(e){}
+  try{document.addEventListener('fullscreenchange',()=>setTimeout(()=>{try{resize()}catch(e){}},100))}catch(e){}
   try{window.claude?.hot?.snapshot?.(()=>({S}))}catch(e){}
   go('home');
 }
