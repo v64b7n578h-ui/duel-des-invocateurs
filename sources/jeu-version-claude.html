@@ -57,6 +57,17 @@ button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line
 .offer button{padding:9px 10px;font-size:13px;white-space:nowrap}
 .offer.iap{border-style:dashed}
 .gem{color:#e3c8ff}
+.slots{position:absolute;z-index:5;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.slot{position:relative;height:74px;border-radius:12px;background:linear-gradient(#3b2d5ecc,#1d1630ee);border:2px solid #000;box-shadow:inset 0 2px 0 #ffffff22,0 3px 0 #000a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;font-weight:800;font-size:11px;text-shadow:0 1px 0 #000;cursor:pointer;text-align:center;line-height:1.1;font-variant-numeric:tabular-nums}
+.slot.empty{background:#0007;border-style:dashed;border-color:#ffffff33;color:#ffffff66;font-weight:700;cursor:default}
+.slot.run{border-color:#3d8bfd;box-shadow:0 0 12px #3d8bfd88}
+.slot.ready{border-color:#46c27a;box-shadow:0 0 16px #46c27a;animation:bob2 1s ease-in-out infinite}
+@keyframes bob2{50%{transform:translateY(-4px)}}
+.slot i{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;background:#46c27a;border:1.5px solid #000;border-radius:6px;padding:0 4px;white-space:nowrap}
+.toggles{display:grid;gap:8px}
+.tgl{display:flex;justify-content:space-between;align-items:center;background:var(--table-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:700}
+.tgl button{min-width:74px;padding:7px 10px}
+.tgl button.off{background:var(--line);color:var(--muted)}
 #tut{position:fixed;inset:0;z-index:66;cursor:pointer}
 .tut-dim{position:absolute;inset:0;background:#000b}
 .tut-hole{position:absolute;border-radius:16px;box-shadow:0 0 0 9999px #000b,0 0 0 3px var(--gold),0 0 22px var(--gold);animation:tutp 1.2s ease-in-out infinite}
@@ -116,7 +127,7 @@ body.home #top,body.home #nav{display:none}
 .rb .c{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(#4b3c7a,#251a45);border:2px solid #000;box-shadow:inset 0 2px 0 #ffffff33,0 3px 0 #000a}
 .rb .c img{width:34px;height:34px;object-fit:cover;border-radius:50%}
 .rb .dot{position:absolute;top:-4px;right:0;width:16px;height:16px;border-radius:50%;background:#e5484d;border:2px solid #000;color:#fff;font-size:10px;line-height:12px}
-.bigb{position:absolute;z-index:5;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:0;background:none;padding:0;color:#fff;font-family:var(--display);font-weight:800;font-size:19px;text-shadow:0 2px 0 #000,0 0 4px #000}
+.bigb{position:absolute;z-index:5;bottom:calc(92px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:0;background:none;padding:0;color:#fff;font-family:var(--display);font-weight:800;font-size:19px;text-shadow:0 2px 0 #000,0 0 4px #000}
 .bigb .c{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:44px;border:3px solid #000;box-shadow:inset 0 4px 0 #ffffff55,inset 0 -6px 0 #0004,0 5px 0 #000a}
 .bigb.atk{left:12px}.bigb.atk .c{background:radial-gradient(circle at 50% 35%,#ffcf5a,#e07b14 70%)}
 .bigb.shp{right:12px}.bigb.shp .c{background:radial-gradient(circle at 50% 35%,#c99bff,#6b2fc0 70%)}
@@ -288,6 +299,8 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 @keyframes flip{from{transform:rotateY(90deg) scale(.6);opacity:0}}
 .adbox{height:130px;border-radius:12px;display:grid;place-items:center;background:repeating-linear-gradient(45deg,#2a2140,#2a2140 12px,#231b37 12px,#231b37 24px);font-size:44px;font-weight:800;margin:12px 0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-height:760px){.rb{line-height:1.05;gap:1px}.side{gap:6px}.rb .c{width:40px;height:40px;font-size:21px;border-radius:11px}.rb .c img{width:28px;height:28px}.bigb .c{width:74px;height:74px;font-size:36px}.bigb .c img{width:46px;height:46px}.bigb{font-size:16px}.slot{height:64px}.bigb{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
+@media (max-height:620px){.side.l,.side.r{top:calc(82px + env(safe-area-inset-top,0px));gap:4px}.rb{font-size:9px}}
 </style>
 
 <div id="app">
@@ -322,7 +335,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.4</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.5</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -436,6 +449,105 @@ function seasonClaimable(){
 function navDots(){const b=document.querySelector('#nav [data-go="season"]');if(!b)return;let d=b.querySelector('.dot');const on=seasonClaimable();if(on&&!d){d=document.createElement('i');d.className='dot';b.appendChild(d)}if(!on&&d)d.remove()}
 /* true quand le jeu tourne dans l'appli Android / iPhone (Capacitor) */
 const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+/* ---------- Sons, musique, vibrations (tout est synthétisé, aucun fichier audio) ---------- */
+const AU={ctx:null,sfx:null,mus:null,noise:null,last:{},mood:null,step:0,next:0};
+function audioInit(){
+  if(AU.ctx)return;try{
+    const C=window.AudioContext||window.webkitAudioContext;if(!C)return;AU.ctx=new C();
+    const comp=AU.ctx.createDynamicsCompressor();comp.connect(AU.ctx.destination);
+    AU.sfx=AU.ctx.createGain();AU.sfx.connect(comp);AU.mus=AU.ctx.createGain();AU.mus.connect(comp);audioVol();
+    const b=AU.ctx.createBuffer(1,AU.ctx.sampleRate,AU.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.noise=b;
+    setInterval(musicTick,50);
+  }catch(e){AU.ctx=null}
+}
+function audioVol(){if(!AU.ctx)return;AU.sfx.gain.value=S.sfx===false?0:.7;AU.mus.gain.value=S.music===false?0:.16}
+document.addEventListener('pointerdown',()=>{audioInit();if(AU.ctx&&AU.ctx.state!=='running')AU.ctx.resume()},{passive:true,capture:true});
+function tone(f,dur,type='sine',vol=.2,f2=null,delay=0,out){
+  const c=AU.ctx;if(!c)return;const t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0008,t+dur);
+  o.connect(g);g.connect(out||AU.sfx);o.start(t);o.stop(t+dur+.05);
+}
+function hiss(dur,vol=.2,freq=1200,delay=0,f2=null){
+  const c=AU.ctx;if(!c)return;const t=c.currentTime+delay,src=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();
+  src.buffer=AU.noise;fl.type='bandpass';fl.frequency.setValueAtTime(freq,t);if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur);fl.Q.value=.8;
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);src.connect(fl);fl.connect(g);g.connect(AU.sfx);src.start(t);src.stop(t+dur+.05);
+}
+function sfx(k){
+  if(!AU.ctx||S.sfx===false)return;const now=performance.now();if(AU.last[k]&&now-AU.last[k]<(k==='hit'?70:40))return;AU.last[k]=now;
+  ({tap:()=>tone(660,.06,'triangle',.12),
+    summon:()=>{tone(320,.28,'sine',.22,900);tone(1320,.12,'triangle',.08,null,.16)},
+    spell:()=>{hiss(.6,.35,2400,0,300);tone(160,.55,'sawtooth',.14,50)},
+    hit:()=>hiss(.07,.13,1600+Math.random()*900),
+    ult:()=>{tone(180,.7,'sawtooth',.13,1100);[523,659,784,1046].forEach((f,i)=>tone(f,.5,'triangle',.11,null,.25+i*.06));hiss(.8,.2,600,.2,4000)},
+    tower:()=>{hiss(1,.5,700,0,120);tone(110,.9,'square',.2,35)},
+    coin:()=>{tone(1320,.09,'square',.07);tone(1760,.16,'square',.07,null,.07)},
+    chest:()=>{hiss(.4,.25,500,0,3000);[392,523,659,784,1046].forEach((f,i)=>tone(f,.35,'triangle',.12,null,.25+i*.07))},
+    win:()=>[523,659,784,1046,1318].forEach((f,i)=>tone(f,i===4?.8:.25,'triangle',.16,null,i*.11)),
+    lose:()=>[392,330,262,196].forEach((f,i)=>tone(f,.4,'sine',.15,null,i*.18)),
+    level:()=>{[523,784,1046,1568].forEach((f,i)=>tone(f,.3,'triangle',.14,null,i*.08));tone(2093,.9,'sine',.08,null,.35)},
+    tick:()=>tone(1046,.04,'square',.05)})[k]?.();
+}
+const vib=ms=>{if(S.vib!==false&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}};
+/* musique d'ambiance : arpège pentatonique doux, plus rapide et en mineur en combat */
+const MOODS={home:{bpm:84,root:220,scale:[0,3,5,7,10,12],pat:[0,2,4,2,5,4,2,1]},battle:{bpm:124,root:196,scale:[0,3,5,7,10,12],pat:[0,2,3,4,2,5,3,1]}};
+function setMood(m){AU.mood=m}
+function musicTick(){
+  const c=AU.ctx;if(!c||!AU.mood||S.music===false||document.hidden)return;const M=MOODS[AU.mood],sp=60/M.bpm/2;
+  if(AU.next<c.currentTime)AU.next=c.currentTime+.05;
+  while(AU.next<c.currentTime+.2){
+    const i=AU.step%M.pat.length,bar=Math.floor(AU.step/8)%4,shift=[0,5,3,7][bar];
+    const f=M.root*Math.pow(2,(M.scale[M.pat[i]]+shift)/12);const d=AU.next-c.currentTime;
+    tone(f,sp*1.8,'triangle',.5,null,d,AU.mus);
+    if(i===0){tone(M.root/2*Math.pow(2,shift/12),sp*8,'sine',.55,null,d,AU.mus);tone(M.root*Math.pow(2,(shift+7)/12),sp*8,'sine',.18,null,d,AU.mus)}
+    AU.step++;AU.next+=sp;
+  }
+}
+document.addEventListener('click',e=>{if(e.target.closest('button,.bld,.rb,.bigb,[data-b],[data-i],.slot'))sfx('tap')},{capture:true});
+
+/* ---------- Coffres à minuteur (4 emplacements) ---------- */
+const CTYPES={
+ argent:{n:'Coffre d\'argent',t:15*60,cards:5,gold:[40,80],inv:[0,0],img:'pack3',f:'grayscale(1) brightness(1.25)',w:62},
+ or:{n:'Coffre d\'or',t:3600,cards:10,gold:[120,200],inv:[0,4],img:'pack3',f:'none',w:27},
+ magique:{n:'Coffre magique',t:4*3600,cards:16,gold:[250,400],inv:[6,14],img:'pack3',f:'hue-rotate(250deg) saturate(1.5)',w:9,min:'E'},
+ legende:{n:'Coffre légendaire',t:8*3600,cards:8,gold:[400,650],inv:[20,40],img:'pack5',f:'none',w:2,min:'L'},
+};
+const chestImg=(k,sz)=>`<img src="art/${CTYPES[k].img}.webp" alt="" style="width:${sz}px;height:${sz}px;object-fit:contain;filter:${CTYPES[k].f} drop-shadow(0 3px 2px #000a)">`;
+const gemsFor=sec=>Math.max(1,Math.ceil(sec/360));
+const fmtT=sec=>{sec=Math.max(0,Math.ceil(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),x=sec%60;return h?`${h} h ${String(m).padStart(2,'0')}`:m?`${m} min ${String(x).padStart(2,'0')}`:`${x} s`};
+const slotLeft=sl=>sl.start?CTYPES[sl.type].t-(Date.now()-sl.start)/1000:CTYPES[sl.type].t;
+const unlocking=()=>S.slots.some(sl=>sl&&sl.start&&slotLeft(sl)>0);
+function rollChest(){if(!S.wins||S.wins===1)return'argent';let r=Math.random()*100;for(const[k,c]of Object.entries(CTYPES)){if((r-=c.w)<0)return k}return'argent'}
+function slotsHTML(){return S.slots.map((sl,i)=>{
+  if(!sl)return`<div class="slot empty" data-slot="${i}"><span>Libre</span></div>`;
+  const c=CTYPES[sl.type],left=slotLeft(sl),ready=sl.start&&left<=0;
+  return`<div class="slot ${ready?'ready':sl.start?'run':''}" data-slot="${i}">${chestImg(sl.type,40)}<span>${ready?'OUVRIR !':sl.start?fmtT(left):fmtT(c.t)}</span>${!sl.start&&!unlocking()?'<i>Déverrouiller</i>':''}</div>`}).join('')}
+function tapSlot(i){
+  const sl=S.slots[i];if(!sl)return;const c=CTYPES[sl.type],left=slotLeft(sl),cost=gemsFor(left);
+  if(sl.start&&left<=0){openTimedChest(i);return}
+  modal(`<div>${chestImg(sl.type,110)}</div><h3>${c.n}</h3><p class="note">${c.cards} cartes · ${c.gold[0]}–${c.gold[1]} 🪙${c.inv[1]?` · jusqu'à ${c.inv[1]} ${CI}`:''}${c.min?` · une carte ${c.min==='L'?'Légendaire':'Épique'} garantie`:''}</p>
+   <div class="big">⏳ ${fmtT(left)}</div>
+   <div class="btns">${!sl.start&&!unlocking()?`<button id="cst">Lancer le déverrouillage (${fmtT(c.t)})</button>`:''}
+   ${!sl.start&&unlocking()?'<p class="note">Un autre coffre est déjà en train de s\'ouvrir. Un seul à la fois !</p>':''}
+   <button class="${!sl.start&&!unlocking()?'ghost':''}" id="cnow" ${S.gems<cost?'disabled':''}>Ouvrir maintenant : ${CI} ${cost}</button>
+   <button class="ghost" data-close>Fermer</button></div>`,box=>{
+    const st=box.querySelector('#cst');if(st)st.onclick=()=>{sl.start=Date.now();persist();closeModal();renderHome()};
+    box.querySelector('#cnow').onclick=()=>{if(S.gems<cost)return;S.gems-=cost;persist();setTop();closeModal();openTimedChest(i)}});
+}
+function openTimedChest(i){
+  const sl=S.slots[i];if(!sl)return;const c=CTYPES[sl.type],lg=arenaOf(S.best).i,mul=1+lg*.25;S.slots[i]=null;
+  const mine=IDS.filter(owned),R='CREL',loot=[];let total=Math.round(c.cards*mul);
+  if(c.min){const best=mine.filter(id=>R.indexOf(DEFS[id].r)>=R.indexOf(c.min));const id=rnd(best.length?best:mine);const n=c.min==='L'?1:2;S.cards[id].n+=n;loot.push([id,n]);total-=n}
+  const picks=shuffle([...mine]).slice(0,Math.min(4,mine.length));
+  picks.forEach((id,k)=>{const n=k===picks.length-1?total:Math.max(1,Math.round(total*(.25+Math.random()*.25)));if(n<=0)return;total-=n;S.cards[id].n+=n;const f=loot.find(l=>l[0]===id);if(f)f[1]+=n;else loot.push([id,n])});
+  const gold=Math.round((c.gold[0]+Math.random()*(c.gold[1]-c.gold[0]))*mul),inv=Math.round(c.inv[0]+Math.random()*(c.inv[1]-c.inv[0]));
+  S.gold+=gold;S.gems+=inv;persist();setTop();sfx('chest');vib(40);
+  modal(`<h3>${c.n}</h3><div class="reveal">${loot.map(([id,n],k)=>`<div class="w" style="animation-delay:${.15+k*.18}s">${cardHTML(id,{lv:S.cards[id].lv})}<span class="tag">+${n}</span></div>`).join('')}</div>
+   <div class="big">+${gold} 🪙${inv?` · +${inv} ${CI}`:''}</div><p class="note">Utilise tes copies dans le Deck pour faire monter tes cartes de niveau.</p><div class="btns"><button data-close>Super</button></div>`);
+  if(!$('#s-home').hidden)renderHome();
+}
+setInterval(()=>{const el=document.querySelector('#slots');if(el&&$('#ov').hidden)el.innerHTML=slotsHTML()},1000);
+
 const xpNeed=lv=>100+lv*60;
 const STARTER=['chevalier','archere','gobelins','squelettes','goule','boule']; // les 6 cartes de base, données à tous
 /* cartes qu'on peut trouver dans les coffres, selon l'arène */
@@ -485,10 +597,13 @@ const upCost=lv=>({copies:lv*3,gold:lv*50});
 let S;
 function fresh(){const cards={};STARTER.forEach(id=>cards[id]={lv:1,n:0});return{needStarter:true,gold:100,gems:60,xp:0,plv:1,map:'academie',maps:{academie:1},tro:0,wins:0,cards,daily:null,streak:0,tut:true}}
 function migrate(s){
-  s.deck=s.deck&&s.deck.length>=6?s.deck.filter(id=>s.cards[id]):[...STARTER];
+  const f0=fresh();for(const k in f0)if(s[k]===undefined&&k!=='needStarter'&&k!=='cards')s[k]=f0[k];s.cards=s.cards||f0.cards;
+  // le deck ne contient que des cartes possédées, et on le complète jusqu'à 8 avec la collection
+  s.deck=(s.deck||[]).filter(id=>s.cards[id]&&DEFS[id]);
+  for(const id of [...STARTER,...Object.keys(s.cards)])if(s.deck.length<8&&s.cards[id]&&DEFS[id]&&!s.deck.includes(id))s.deck.push(id);
   s.fus=s.fus||{};s.avatar=s.avatar||'🧑‍🦱';s.name=s.name||'Vous';
   s.best=Math.max(s.best||0,s.tro);s.played=s.played||s.wins||0;
-  s.gems=s.gems??60;s.mine=s.mine||Date.now()-36e5*2;s.pass=s.pass||{xp:0,prem:false,f:{},p:{}};s.circ=s.circ||'base';s.circs=s.circs||{base:1};s.xpB=s.xpB||0;s.goldB=s.goldB||0;s.xp=s.xp||0;s.plv=s.plv||1;s.map=s.map||'academie';s.maps=s.maps||{academie:1};
+  s.gems=s.gems??60;s.slots=s.slots||[null,null,null,null];s.ls=s.ls||0;s.mine=s.mine||Date.now()-36e5*2;s.pass=s.pass||{xp:0,prem:false,f:{},p:{}};s.circ=s.circ||'base';s.circs=s.circs||{base:1};s.xpB=s.xpB||0;s.goldB=s.goldB||0;s.xp=s.xp||0;s.plv=s.plv||1;s.map=s.map||'academie';s.maps=s.maps||{academie:1};
   return s;
 }
 const owned=id=>!!S.cards[id];
@@ -535,7 +650,7 @@ const mineRate=()=>40+S.plv*12;                 // or produit par heure
 const mineCap=()=>mineRate()*8;                 // capacité : 8 heures
 const mineStock=()=>Math.min(mineCap(),Math.floor((Date.now()-S.mine)/36e5*mineRate()));
 function renderHome(){
-  document.body.classList.add('home');
+  document.body.classList.add('home');setMood('home');
   const a=arenaOf(S.tro),m=mapOf(S.map),can=S.daily!==today(),st=mineStock();
   const sOk=(()=>{try{return seasonClaimable()}catch(e){return false}})();
   $('#s-home').innerHTML=`<div class="vil" id="vil">
@@ -553,13 +668,14 @@ function renderHome(){
       <button class="rb" data-b="daily"><span class="c">🎁</span>Coffre${can?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="season"><span class="c">📖</span>Saison${sOk?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="prof"><span class="c">${avPic(S.avatar)}</span>Profil</button>
-      <button class="rb" data-b="help"><span class="c">❓</span>Aide</button>
     </div>
     <div class="side r">
       <button class="rb" data-b="deck"><span class="c">🎴</span>Deck</button>
+      <button class="rb" data-b="help"><span class="c">❓</span>Aide</button>
       <button class="rb" data-b="maps"><span class="c"><img src="${mapImg(m)}" alt="" style="border-radius:8px"></span>Arène</button>
       ${isStandalone()?'':`<button class="rb" data-b="fs"><span class="c">📲</span>Plein écran</button>`}
     </div>
+    <div class="slots" id="slots">${slotsHTML()}</div>
     <button class="bigb atk" data-b="fight"><span class="c">⚔️</span>COMBAT<small>${m.n}</small></button>
     <button class="bigb shp" data-b="shop"><span class="c"><img src="art/pack3.webp" alt=""></span>BOUTIQUE</button>
   </div>`;
@@ -576,7 +692,7 @@ function layoutVillage(){
 addEventListener('resize',()=>{if(!$('#s-home').hidden)layoutVillage()});
 function collectMine(){
   const st=mineStock();if(st<1)return;
-  S.gold+=st;S.mine=Date.now();persist();
+  S.gold+=st;S.mine=Date.now();persist();sfx('coin');vib(20);
   const from=$('#bub').getBoundingClientRect(),to=$('#vgold').getBoundingClientRect();
   for(let i=0;i<8;i++){const c=document.createElement('img');c.src='art/coin_flat.webp';c.className='flycoin';c.style.filter='sepia(1) saturate(3) hue-rotate(5deg)';
     c.style.left=(from.left+from.width/2-13+(Math.random()-.5)*30)+'px';c.style.top=(from.top+(Math.random()-.5)*20)+'px';document.body.appendChild(c);
@@ -585,6 +701,7 @@ function collectMine(){
   setTimeout(()=>{renderHome();setTop()},700);
 }
 $('#s-home').addEventListener('click',e=>{
+  const sl0=e.target.closest('[data-slot]');if(sl0){tapSlot(+sl0.dataset.slot);return}
   const t=e.target.closest('[data-b]');if(!t)return;const b=t.dataset.b;
   if(e.target.closest('#bub')){collectMine();return}
   if(S.needStarter){chooseStarter();return}
@@ -618,7 +735,7 @@ const TUT=[
  {sel:'.side.r [data-b="deck"]',t:'Ton deck',b:'Tes 8 cartes de combat. Ici tu les fais monter de niveau, tu les éveilles, et tu débloques de nouveaux personnages.'},
  {sel:'.bigb.shp',t:'Boutique',b:'Achète des personnages, des coffres et des effets avec tes Invoks.'},
  {sel:'.side.l [data-b="season"]',t:'Quêtes et saison',b:'3 quêtes chaque jour et 30 paliers de récompenses à gagner.'},
- {sel:'.side.l [data-b="help"]',t:'Besoin d\'aide ?',b:'Toutes les règles sont expliquées ici, à tout moment. Bonne chance !'},
+ {sel:'.side.r [data-b="help"]',t:'Besoin d\'aide ?',b:'Toutes les règles sont expliquées ici, à tout moment. Bonne chance !'},
 ];
 function tutorial(i){
   let o=$('#tut');if(!o){o=document.createElement('div');o.id='tut';document.body.appendChild(o)}
@@ -638,6 +755,7 @@ const HELP=[
  {ic:'🔀',t:'Les fusions',b:'Invoque une carte directement sur une de tes troupes compatibles : elles fusionnent en un monstre légendaire. Les 4 recettes sont dans l\'onglet Deck.'},
  {ic:'🔓',t:'Débloquer des personnages',b:'Tu commences avec 6 cartes de base et 2 héros choisis. Chaque autre personnage se débloque GRATUITEMENT à un niveau de joueur, ou TOUT DE SUITE avec des Invoks (Deck ou Boutique).'},
  {ic:'⬆️',t:'Faire évoluer',b:'Les coffres donnent des copies de tes cartes. Avec des copies et de l\'or, monte une carte de niveau (+10 %). Au niveau 3, 6 et 9, l\'Éveil la rend encore plus forte (+15 %) et change son aura.'},
+ {ic:'🧰',t:'Les coffres',b:'Chaque victoire rapporte un coffre (argent, or, magique ou légendaire) qui se range dans un des 4 emplacements du village. Lance son déverrouillage : un seul coffre s\'ouvre à la fois. Reviens quand le minuteur est fini, ou ouvre-le tout de suite avec des Invoks.'},
  {ic:'🪙',t:'Or et Invoks',b:'L\'or se gagne en combat, avec ton château et dans les coffres : il sert à faire évoluer tes cartes. Les Invoks (monnaie rare) se gagnent en montant de niveau, dans le coffre du jour et la saison : ils débloquent personnages, arènes et coffres.'},
  {ic:'📅',t:'Chaque jour',b:'Ouvre le coffre du jour (la récompense monte pendant 7 jours), fais tes 3 quêtes, récolte ton château et avance dans le Grimoire de saison.'},
 ];
@@ -667,7 +785,7 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
-const VERSION='1.4';
+const VERSION='1.5';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];
@@ -718,7 +836,7 @@ function addXP(x){
     S.gems+=r.gems;S.gold+=r.gold;
     for(const [id,q] of Object.entries(NEWREQ))if(q.lv<=S.plv&&!owned(id)){S.cards[id]={lv:1,n:0};r.cards.push(id)}
     for(const m of MAPS)if(m.lv<=S.plv&&!S.maps[m.id]){S.maps[m.id]=1;r.maps.push(m.n)}
-    ups.push(r);
+    ups.push(r);setTimeout(()=>sfx('level'),900);
   }
   return ups;
 }
@@ -876,11 +994,14 @@ function renderProf(){
     <div class="tile"><div class="label">Fusions</div><div class="v">${nf}/${FIDS.length}</div></div>
     <div class="tile"><div class="label">Taux</div><div class="v">${S.played?Math.round(S.wins/S.played*100):0}%</div></div>
   </div>
+  <h4>Réglages</h4>
+  <div class="toggles">${[['sfx','🔊 Bruitages'],['music','🎵 Musique'],['vib','📳 Vibrations']].map(([k,l])=>`<div class="tgl">${l}<button data-tg="${k}" class="${S[k]===false?'off':''}">${S[k]===false?'Désactivé':'Activé'}</button></div>`).join('')}</div>
   <h4>Avatars</h4>
   <div class="avs">${AVATARS.map(([e,n,req,ok])=>`<button data-av="${e}" class="${S.avatar===e?'on':''}" ${ok()?'':'disabled'} title="${req}"><span>${avPic(e)}</span>${ok()?n:req}</button>`).join('')}</div>`;
   $('#pname').oninput=e=>{S.name=e.target.value.trim()||'Vous';persist()};
 }
-$('#s-prof').addEventListener('click',e=>{const b=e.target.closest('[data-av]');if(!b||b.disabled)return;S.avatar=b.dataset.av;persist();renderProf()});
+$('#s-prof').addEventListener('click',e=>{const tg=e.target.closest('[data-tg]');if(tg){const k=tg.dataset.tg;S[k]=S[k]===false;persist();audioVol();renderProf();return}
+  const b=e.target.closest('[data-av]');if(!b||b.disabled)return;S.avatar=b.dataset.av;persist();renderProf()});
 /* ---------- Combat : moteur ---------- */
 /* géométrie calée sur l'illustration de l'arène (941×1672 px, 1 case = 47 px) */
 const W=941/47,H=1672/47,BR=[5.43,14.64],CX=10,RV0=15.74,RV1=17.45,RVC=16.6;
@@ -911,10 +1032,10 @@ function installTip(){
   return`<div class="install">📲 <b>Astuce :</b> menu <b>⋮</b> du navigateur → <b>« Ajouter à l'écran d'accueil »</b> pour jouer en plein écran comme une appli.</div>`;
 }
 function startBattle(){
-  goFS();document.body.classList.add('battle');
+  goFS();setMood('battle');document.body.classList.add('battle');
   const deck=shuffle([...S.deck]),adeck=shuffle([...new Set([...STARTER,...HEROES,...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/100)])]).slice(0,8);G_map=mapOf(S.map);
   G={banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
-     ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:S.played?0:7,eLv:enemyLv()};
+     ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:S.played?0:7,aiK:S.played<3?1.5:S.ls>=3?1.35:S.ls>=2?1.2:1,eLv:enemyLv()};
   G.ents.push(tower('p','king',CX,29.04),tower('p','princess',3.94,24.57),tower('p','princess',16.17,24.57),tower('e','king',CX,5.21),tower('e','princess',4.72,8.19),tower('e','princess',15.28,8.19));
   $('#ename').innerHTML=foePic(foe,'foeimg')+esc(foe[0]);
   $('#pname2').innerHTML=avPic(S.avatar,'meimg')+esc(S.name);$('#lvls').textContent=`Cartes adverses niv. ${G.eLv}`;
@@ -972,6 +1093,7 @@ function cast(team,id,x,y,lv){
   }else{G.fx.push({type:'boom',x,y,r:d.area,t:0,dur:.5});hit()}
 }
 function hurt(t,d){
+  if(G&&!G.over)sfx('hit');
   t.hp-=d;if(t.tower&&t.kind==='king')t.active=true;if(d>=150&&G)G.shake=Math.max(G.shake,2.5);
   G.fx.push({type:'num',x:t.x+(Math.random()-.5)*.6,y:t.y-t.rad,txt:'-'+Math.round(d),t:0,dur:.7});
 }
@@ -1028,6 +1150,7 @@ const ULT={
 };
 function setFace(e,f){if(e.face!==f){e.face=f;e.turnT=.18}}
 function doUlt(a,t){
+  sfx('ult');if(a.team==='p')vib([30,40,60]);
   const U=ULT[a.id];a.pw=0;const pl=a.team==='p';
   if(!G.banner||G.banner.t>1||(pl&&G.banner.team!=='p'))G.banner={txt:U.n,c:U.c,id:a.id,t:0,dur:1.4,team:a.team};
   if(pl)G.slowT=.5;G.shake=Math.max(G.shake,pl?9:6);
@@ -1102,7 +1225,7 @@ function impact(v,x,y){
 function update(dt){
   G.t=Math.max(0,G.t-dt);
   const rate=(G.t<=60?2:1)/2.8*dt;
-  G.elx=Math.min(10,G.elx+rate);G.aelx=Math.min(10,G.aelx+rate);
+  G.elx=Math.min(10,G.elx+rate);G.aelx=Math.min(10,G.aelx+rate/(G.aiK||1));
   for(const e of G.ents){
     if(e.hp<=0)continue;
     e.cd=Math.max(0,e.cd-dt);e.atkT=Math.max(0,(e.atkT||0)-dt);e.turnT=Math.max(0,(e.turnT||0)-dt);e.hitT=Math.max(0,(e.hitT||0)-dt);
@@ -1145,6 +1268,7 @@ function update(dt){
     else G.fx.push({type:'pop',x:e.x,y:e.y,t:0,dur:.4});
     if(e.tower){
       if(e.team==='e')G.st.towers++;
+      sfx('tower');vib(120);
       G.shake=Math.max(G.shake,14);G.fx.push({type:'screen',c:'#ffffff',t:0,dur:.25});
       G.ruins.push({team:e.team,kind:e.kind,x:e.x,y:e.y});burst(e.x,e.y-1,'#cfc6e6',30,5);burst(e.x,e.y-1,e.team==='p'?'#6fb7ff':'#ff5a5a',20,4);G.fx.push({type:'ring',x:e.x,y:e.y,r:3,c:'#ffffff',t:0,dur:.6});
       const other=e.team==='p'?'e':'p';
@@ -1181,7 +1305,7 @@ function aiPlay(i,x,y){
 }
 function ai(dt){
   if((G.ai-=dt)>0)return;
-  G.ai=.7+Math.random()*.6;
+  G.ai=(.7+Math.random()*.6)*(G.aiK||1);
   const can=G.ahand.map((id,i)=>({id,i,d:DEFS[id]})).filter(o=>o.d.c<=G.aelx);
   if(!can.length)return;
   const threats=G.ents.filter(e=>e.team==='p'&&!e.tower&&e.y<RV1+1.5&&e.deploy<=0);
@@ -1451,7 +1575,8 @@ cv.addEventListener('pointerdown',e=>{
   if(d.c>G.elx)return hint(`Pas assez d’élixir (${d.c} nécessaires).`);
   if(!d.spell&&!openZones().some(z=>x>=z.x0&&x<=z.x1&&y>=z.y0))return hint('Invoquez dans la zone bleue, de votre côté.');
   G.elx-=d.c;
-  if(d.spell){cast('p',id,x,y,S.cards[id].lv);G.st.spell++}else{spawn('p',id,x,y,S.cards[id].lv);G.st.summon++}
+  if(d.spell){cast('p',id,x,y,S.cards[id].lv);G.st.spell++;sfx('spell')}else{spawn('p',id,x,y,S.cards[id].lv);G.st.summon++;sfx('summon')}
+  vib(12);
   G.queue.push(id);G.hand[G.sel]=G.next;G.next=G.queue.shift();G.sel=null;
   if(S.tut){S.tut=false;persist()}
   hint('');renderHand();
@@ -1472,10 +1597,10 @@ function endBattle(){
   S.tro=Math.max(0,S.tro+dT);S.best=Math.max(S.best,S.tro);S.played++;
   let gold=win?40+p*15:draw_?15:5;
   if(win)S.wins++;
-  const loot=[];
-  if(win){
-    while(loot.length<4){const id=rnd(IDS.filter(owned)),n=DEFS[id].r==='L'?1:DEFS[id].r==='E'?1+(Math.random()<.5|0):2+Math.floor(Math.random()*3);S.cards[id].n+=n;loot.push([id,n])}
-  }
+  S.ls=win?0:draw_?S.ls:S.ls+1;
+  let won=null,full=false;
+  if(win){const k=rollChest(),i=S.slots.indexOf(null);if(i>=0){S.slots[i]={type:k,start:null};won=k}else full=true}
+  setTimeout(()=>sfx(win?'win':'lose'),150);if(win)vib([40,60,80]);
   const xpMul=S.xpB>0?2:1;if(S.xpB>0)S.xpB--;
   if(win&&S.goldB>0){gold*=2;S.goldB--}
   const xpGain=(win?50+p*10:draw_?30:20)*xpMul;
@@ -1488,7 +1613,8 @@ function endBattle(){
   const upHTML=ups.map(u=>`<div class="tile" style="margin-top:10px;border:1px solid var(--gold);border-radius:12px;padding:10px"><b style="color:var(--gold)">Niveau ${u.lv} !</b><div class="note">+${u.gems} ${CI} · +${u.gold} 🪙${u.cards.length?' · Nouveau personnage : '+u.cards.map(id=>DEFS[id].n).join(', '):''}${u.maps.length?' · Nouvelle arène : '+u.maps.join(', '):''}</div></div>`).join('');
   const title=win?'Victoire !':draw_?'Égalité':'Défaite';
   modal(`<h3>${title}</h3><div class="big">👑 ${p} – ${e}</div><div class="note">🏆 ${dT>=0?'+':''}${dT} trophées</div>
-    ${win?`<div class="label" style="margin-top:12px">Coffre de victoire</div><div class="reveal">${loot.map(([id,n,nw],i)=>`<div class="w" style="animation-delay:${i*.2}s">${cardHTML(id,{lv:S.cards[id].lv})}<span class="tag" ${nw?'style="color:var(--ok)"':''}>${nw?'NOUVELLE !':'+'+n}</span></div>`).join('')}</div>`:''}
+    ${won?`<div class="label" style="margin-top:12px">Coffre gagné</div><div style="animation:flip .5s .2s backwards">${chestImg(won,96)}</div><div class="note"><b>${CTYPES[won].n}</b> · s'ouvre en ${fmtT(CTYPES[won].t)} depuis ton village</div>`:''}
+    ${full?`<div class="note" style="color:var(--red);margin-top:10px">Tes 4 emplacements de coffres sont pleins : ouvre-les pour en gagner de nouveaux !</div>`:''}
     <div class="big">+${gold} 🪙</div><div class="note">+${spGain} points de saison 📖 · +${xpGain} XP${xpMul>1?' (parchemin ×2)':''}</div>${upHTML}${newAv?'<div class="note" style="color:var(--gold)">🎭 Nouvel avatar débloqué dans votre profil !</div>':''}
     <div class="btns">${win&&!NATIVE?`<button id="x2">📺 Doubler l'or : +${gold*2} 🪙</button>`:''}<button class="${win?'ghost':''}" id="take">${win?`Prendre ${gold} 🪙`:'Continuer'}</button></div>`,
     box=>{
