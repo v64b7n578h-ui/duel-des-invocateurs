@@ -387,6 +387,92 @@
       },
       "source": "chevalier",
       "edition": "Brillante"
+    },
+    "squelettes_2": {
+      "num": 1,
+      "forme": 2,
+      "nom": "Chevaliers d'Os",
+      "cout": 1,
+      "rarete": "Commune",
+      "type": "Mort-vivant ×3",
+      "atk": 46,
+      "pv": 46,
+      "attaque": [
+        "Lames spectrales",
+        "frappent au corps à corps."
+      ],
+      "talent": [
+        "Armure d'os",
+        "forme éveillée : +15 % d'attaque et de PV."
+      ],
+      "zones": {
+        "medaillon": [
+          120,
+          116,
+          72
+        ],
+        "nom": [
+          236,
+          90,
+          916,
+          176
+        ],
+        "texte": [
+          50,
+          1196,
+          970,
+          1440
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
+    },
+    "squelettes_3": {
+      "num": 1,
+      "forme": 3,
+      "nom": "Légion de la Liche",
+      "cout": 1,
+      "rarete": "Commune",
+      "type": "Mort-vivant ×3",
+      "atk": 58,
+      "pv": 58,
+      "attaque": [
+        "Épée de la Liche",
+        "tranche au corps à corps."
+      ],
+      "talent": [
+        "Armée éternelle",
+        "forme divine : +45 % d'attaque et de PV."
+      ],
+      "zones": {
+        "medaillon": [
+          120,
+          120,
+          72
+        ],
+        "nom": [
+          222,
+          86,
+          916,
+          182
+        ],
+        "texte": [
+          76,
+          1182,
+          952,
+          1436
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
     }
   }
 }

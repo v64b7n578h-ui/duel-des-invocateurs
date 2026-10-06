@@ -115,6 +115,7 @@ def render(cid, c, serie, total):
     n_stars, rcol = RARE[c['rarete']]
     if c.get('edition'):
         rcol = '#ffd56b'
+    FORME = {2: ('FORME 2 · ÉVEILLÉE', '#d9a6ff'), 3: ('FORME 3 · DIVINE', '#ffd56b')}
 
     # --- coût dans le médaillon ---
     mx, my, mr = z['medaillon']
@@ -141,6 +142,9 @@ def render(cid, c, serie, total):
     if c.get('edition'):
         lab = f"ÉDITION {c['edition'].upper()}  ·  " + lab
         rcol = '#ffd56b'
+    if c.get('forme') in FORME:
+        pre, rcol = FORME[c['forme']]
+        lab = pre + '  ·  ' + c['type'].upper()
     d.text((tx, cy), lab, font=font(B8, 23), fill=rcol, anchor='lm')
     # stats à droite
     fs, fl = font(B8, 30), font(B7, 19)
@@ -172,7 +176,7 @@ def render(cid, c, serie, total):
 
     # numéro de collection + série, en tout petit
     fsm = font(B6, 16)
-    d.text((x0 + pad, y1 - 16), f"{c['num']:03d}/{total:03d}", font=fsm, fill=(220, 210, 240, 190), anchor='lm')
+    d.text((x0 + pad, y1 - 16), f"{c['num']:03d}" + (f"-{c['forme']}" if c.get('forme') else '') + f"/{total:03d}", font=fsm, fill=(220, 210, 240, 190), anchor='lm')
     d.text((x1 - pad, y1 - 16), f'Duel des Invocateurs · {serie}', font=fsm, fill=(220, 210, 240, 190), anchor='rm')
     if y > y1 - 26:
         print(f'  ⚠ {cid} : texte trop long pour l\'encadré, raccourcis la description')

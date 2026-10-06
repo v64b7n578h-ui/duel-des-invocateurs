@@ -76,6 +76,13 @@ button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line
 .rtag{font:800 10px var(--body);letter-spacing:.08em;text-transform:uppercase}
 .alb-goals{display:grid;gap:8px;margin:6px 0 14px}
 .viewer{position:fixed;inset:0;z-index:62;background:radial-gradient(circle at 50% 40%,#2a1d4dee,#07050cf5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;perspective:900px;touch-action:none}
+.evoline{display:flex;align-items:center;gap:6px;margin:12px 0 2px;justify-content:center}
+.evoline .ar{color:var(--gold);font-size:16px}
+.evoline .ef{position:relative;width:54px;aspect-ratio:2/3;padding:0;border-radius:6px;overflow:hidden;border:2px solid #fff3;background:#0b0814;cursor:pointer}
+.evoline .ef img{width:100%;height:100%;object-fit:cover;display:block}
+.evoline .ef.on{border-color:var(--gold);box-shadow:0 0 10px var(--gold)}
+.evoline .ef.lk img{filter:grayscale(1) brightness(.35)}
+.evoline .ef i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-style:normal;font-size:10px;font-weight:800;color:#fff;line-height:1.2}
 .viewer .big{position:relative;width:min(78vw,340px);aspect-ratio:2/3;border-radius:16px;overflow:hidden;transform-style:preserve-3d;transition:transform .08s linear;box-shadow:0 20px 50px #000c,0 0 40px var(--rc)}
 .viewer .big img{width:100%;height:100%;object-fit:cover;display:block}
 .viewer .holo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:var(--ho,.35);background:radial-gradient(circle at var(--mx,50%) var(--my,50%),#ffffffaa 0,#0000 35%),linear-gradient(var(--ang,115deg),#ff00e055,#00e5ff55,#ffe60055,#00ff9555,#ff00e055);background-size:100% 100%,300% 300%;background-position:0 0,var(--mx,50%) var(--my,50%)}
@@ -751,9 +758,15 @@ setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=
 const RORD='CREL';
 const ALBUM=[...IDS.slice().sort((a,b)=>RORD.indexOf(DEFS[a].r)-RORD.indexOf(DEFS[b].r)||DEFS[a].c-DEFS[b].c),...FIDS];
 /* cartes dont l'illustration de collection existe (art/cartes/<id>.webp, faite avec tools/cartes.py) */
-const CARTES=['dragon','squelettes','gobelins','goule','chevalier','squelettes_b','gobelins_b','goule_b','chevalier_b'];
-/* version « Édition Brillante » quand le personnage est éveillé (Éveil 1 ou plus) */
-const cImg=id=>!FUS[id]&&evoOf(id)>=1&&CARTES.includes(id+'_b')?id+'_b':id;
+const CARTES=['dragon','squelettes','gobelins','goule','chevalier','squelettes_b','gobelins_b','goule_b','chevalier_b','squelettes_2','squelettes_3'];
+/* lignes d'évolution : <id>_2 (forme 2, débloquée à l'Éveil) et <id>_3 (forme 3, au rang Divin) ; _b = ancienne Édition Brillante */
+const FNAME={"squelettes_2": "Chevaliers d'Os", "squelettes_3": "Légion de la Liche", "gobelins_2": "Gobelins Bombardiers", "gobelins_3": "Maître Alchimiste Gobelin", "goule_2": "Goule Abominable", "goule_3": "Reine des Goules", "chevalier_2": "Croisé des Runes", "chevalier_3": "Seigneur des Runes", "archere_2": "Rôdeuse des Étoiles", "archere_3": "Reine des Constellations", "loups_2": "Loup Alpha des Ténèbres", "loups_3": "Fenrir du Néant", "pretresse_2": "Oracle de l'Aube", "pretresse_3": "Déesse du Soleil", "sorciere_2": "Impératrice du Givre", "sorciere_3": "Reine de l'Hiver Éternel", "assassin_2": "Spectre du Néant", "assassin_3": "Faucheur du Néant", "boule_2": "Pluie de Météores", "boule_3": "Comète Apocalyptique", "samourai_2": "Daimyo Spirituel", "samourai_3": "Kami de la Lame", "basilic_2": "Hydre Venimeuse", "basilic_3": "Hydre Primordiale", "mage_2": "Grand Archimage", "mage_3": "Archimage Suprême", "blizzard_2": "Tempête Glaciaire", "blizzard_3": "Ère Glaciaire", "valkyrie_2": "Valkyrie du Tonnerre", "valkyrie_3": "Reine des Valkyries", "chaman_2": "Chaman Ancestral", "chaman_3": "Esprit-Totem Primordial", "golem_2": "Colosse Solaire", "golem_3": "Titan du Soleil", "phenix_2": "Phénix Ardent", "phenix_3": "Phénix Immortel", "lave_2": "Titan de Magma", "lave_3": "Seigneur du Volcan", "gardien_2": "Archange Gardien", "gardien_3": "Séraphin Divin", "foudre_2": "Colère des Cieux", "foudre_3": "Apocalypse Divine", "dragon_2": "Dragon des Glaces Ancien", "dragon_3": "Dragon Arcanique Céleste"};
+const FORMS=id=>FUS[id]?[id]:[id,id+'_2',id+'_3'].filter(k=>k===id||CARTES.includes(k));
+const formOK=(id,k)=>k===id||(k.endsWith('_3')?evoOf(id)>=3:evoOf(id)>=1);
+const formName=(id,k)=>FNAME[k]||cName(id);
+const formLbl=k=>k.endsWith('_3')?'✦✦✦ Forme 3 · Divine':k.endsWith('_2')?'✦ Forme 2 · Éveillée':k.endsWith('_b')?'✦ Édition Brillante':'';
+const cImg=id=>{if(FUS[id])return id;const e=evoOf(id);
+  if(e>=3&&CARTES.includes(id+'_3'))return id+'_3';if(e>=1&&CARTES.includes(id+'_2'))return id+'_2';if(e>=1&&CARTES.includes(id+'_b'))return id+'_b';return id};
 const RNAME={C:'Commune',R:'Rare',E:'Épique',L:'Légendaire',F:'Arcane Secrète'};
 const RCOL={C:'#c9c6d6',R:'#6fb7ff',E:'#c77dff',L:'#ffd56b',F:'#ffe9a8'};
 const cRar=id=>FUS[id]?'F':DEFS[id].r;
@@ -775,7 +788,7 @@ function renderAlbum(){
   const n=albumCount(),R=S.albumR||{};
   $('#s-album').innerHTML=`<h2>Album · Saison 1</h2>
    <div class="alb-head"><b style="font-size:20px">${n}/${ALBUM.length}</b><span class="prog"><i style="width:${n/ALBUM.length*100}%"></i></span><span class="note">cartes</span></div>
-   <p class="note" style="margin:0 0 8px">Chaque personnage débloqué et chaque fusion découverte ajoute sa carte à ton album. Éveille un personnage pour obtenir sa carte en <b style="color:var(--gold)">Édition Brillante</b>. Les Épiques et plus sont holographiques : touche une carte pour l'admirer.</p>
+   <p class="note" style="margin:0 0 8px">Chaque personnage débloqué et chaque fusion découverte ajoute sa carte à ton album. Comme une créature qui évolue, chaque personnage a <b style="color:var(--gold)">3 formes</b> : éveille-le pour débloquer sa forme 2, puis atteins le rang Divin pour sa forme 3. Les Épiques et plus sont holographiques : touche une carte pour l'admirer.</p>
    <div class="alb-goals">${ALB_GOALS.map(([k,g])=>{const ok=n>=k,got=R[k];return`<div class="quest ${got?'done':''}"><div class="tx"><b>Collectionne ${k} cartes</b><span class="note">+${g} Invoks</span><div class="prog"><i style="width:${Math.min(100,n/k*100)}%"></i></div></div>${got?'✔':ok?`<button data-ag="${k}">Prendre</button>`:`<span class="note">${Math.min(n,k)}/${k}</span>`}</div>`}).join('')}</div>
    ${['C','R','E','L','F'].map(r=>{const ids=ALBUM.filter(id=>cRar(id)===r);return`<h4 style="color:${RCOL[r]}">${RNAME[r]} <span class="note">${ids.filter(cOwned).length}/${ids.length}</span></h4><div class="alb-grid">${ids.map(id=>albumCard(id)).join('')}</div>`}).join('')}`;
 }
@@ -787,8 +800,10 @@ $('#s-album').addEventListener('click',e=>{
 function viewCard(id){
   const r=cRar(id),D=FUS[id]||DEFS[id],v=document.createElement('div');v.className='viewer';
   const img=CARTES.includes(id)?`<img src="art/cartes/${cImg(id)}.webp" alt="">`:`<div class="acard ph" style="--rc:${RCOL[r]};width:100%;height:100%;border-radius:16px"><img src="art/${id}.webp" alt=""><div class="nm" style="font-size:18px">${esc(D.n)}<small style="font-size:12px">${RNAME[r].toUpperCase()}</small></div></div>`;
-  v.innerHTML=`<button class="x" aria-label="Fermer">✕</button><div class="big" style="--rc:${RCOL[r]}">${img}<div class="holo" style="--ho:${cImg(id)!==id?.5:r==='C'?.12:r==='R'?.22:.45}"></div></div>
-   <div class="info"><b>${esc(D.n)}</b><div class="rtag" style="color:${RCOL[r]}">N° ${cNum(id)} · ${RNAME[r]}${cImg(id)!==id?' · <span style="color:var(--gold)">✦ Édition Brillante</span>':''}</div><p class="note">${esc(D.txt||'')}</p><p class="note">Bouge ton doigt sur la carte pour la faire briller.</p></div>`;
+  const fs=FORMS(id),k0=cImg(id);
+  const line=fs.length>1?`<div class="evoline">${fs.map((k,i)=>`${i?'<span class="ar">➜</span>':''}<button class="ef ${k===k0?'on':''} ${formOK(id,k)?'':'lk'}" data-f="${k}"><img src="art/cartes/${k}.webp" alt="">${formOK(id,k)?'':`<i>${k.endsWith('_3')?'Divin<br>✦✦✦':'Éveil<br>✦'}</i>`}</button>`).join('')}</div>`:'';
+  v.innerHTML=`<button class="x" aria-label="Fermer">✕</button><div class="big" style="--rc:${RCOL[r]}">${img}<div class="holo" style="--ho:${k0!==id?.5:r==='C'?.12:r==='R'?.22:.45}"></div></div>
+   ${line}<div class="info"><b class="fn">${esc(formName(id,k0))}</b><div class="rtag" style="color:${RCOL[r]}">N° ${cNum(id)} · ${RNAME[r]}<span class="fl">${formLbl(k0)?' · <span style="color:var(--gold)">'+formLbl(k0)+'</span>':''}</span></div><p class="note">${esc(D.txt||'')}</p><p class="note">Bouge ton doigt sur la carte pour la faire briller.</p></div>`;
   document.body.appendChild(v);sfx('chest');
   const big=v.querySelector('.big'),holo=v.querySelector('.holo');
   const move=(cx,cy)=>{const b=big.getBoundingClientRect(),x=(cx-b.left)/b.width,y=(cy-b.top)/b.height;
@@ -797,6 +812,11 @@ function viewCard(id){
   let t=0;const auto=setInterval(()=>{if(!document.body.contains(v))return clearInterval(auto);t+=.05;const b=big.getBoundingClientRect();if(!v.matches(':active'))move(b.left+b.width*(.5+Math.sin(t)*.35),b.top+b.height*(.5+Math.cos(t*.7)*.3))},40);
   v.addEventListener('pointerdown',()=>clearInterval(auto),{once:true});
   v.querySelector('.x').onclick=()=>{clearInterval(auto);v.remove()};
+  v.querySelectorAll('.ef').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.f;
+    if(!formOK(id,k)){hint(k.endsWith('_3')?'Atteins le rang Divin ✦✦✦ (Éveil 3) pour débloquer cette forme.':'Éveille ce personnage ✦ pour débloquer cette forme.');return}
+    v.querySelectorAll('.ef').forEach(x=>x.classList.toggle('on',x===b));const im=big.querySelector('img');if(im)im.src=`art/cartes/${k}.webp`;
+    holo.style.setProperty('--ho',k!==id?.5:r==='C'?.12:r==='R'?.22:.45);
+    v.querySelector('.fn').textContent=formName(id,k);v.querySelector('.fl').innerHTML=formLbl(k)?' · <span style="color:var(--gold)">'+formLbl(k)+'</span>':''});
 }
 
 /* ---------- Choix des héros de départ ---------- */
