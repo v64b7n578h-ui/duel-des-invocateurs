@@ -103,17 +103,6 @@ def holo_fx(im, z, seed=1):
     rays = rays.filter(ImageFilter.GaussianBlur(14))
     m = Image.fromarray((np.asarray(rays) * art).astype('uint8'))
     out.alpha_composite(Image.merge('RGBA', (Image.new('L', (W, H), 255), Image.new('L', (W, H), 240), Image.new('L', (W, H), 200), m)))
-    # 4) éclats scintillants
-    sp = Image.new('RGBA', (W, H), (0, 0, 0, 0)); ds = ImageDraw.Draw(sp)
-    for _ in range(70):
-        x, y = rnd.randint(cx0 + 10, cx1 - 10), rnd.randint(cy0 + 10, cy1 - 10)
-        if inside_text[y, x]: continue
-        r = rnd.choice([6, 8, 10, 14, 20, 28])
-        col = rnd.choice([(255, 255, 255), (255, 240, 190), (200, 235, 255), (255, 210, 250)])
-        star(ds, x, y, r, col + (rnd.randint(170, 255),))
-        ds.ellipse((x - r * .18, y - r * .18, x + r * .18, y + r * .18), fill=(255, 255, 255, 255))
-    glow = sp.filter(ImageFilter.GaussianBlur(4))
-    out.alpha_composite(glow); out.alpha_composite(sp)
     return out
 
 
