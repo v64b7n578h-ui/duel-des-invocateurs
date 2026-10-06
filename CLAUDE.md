@@ -51,7 +51,10 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
   Numérotation = ordre `ALBUM` (raretés C→R→E→L puis 4 fusions « Arcane Secrète ») ; prompt de toute la série : `store/cartes-toutes.md`.
   « Édition Brillante » : entrée `<id>_b` avec `"source":"<id>","edition":"Brillante"` (cadre doré, holo, rayons, éclats via `holo_fx`) ;
   dans l'album, elle remplace la carte normale quand le personnage est éveillé (`cImg`).
-  Planches de 4 cartes : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
+  LIGNES D'ÉVOLUTION (remplacent planches et Brillantes) : `store/cartes-evolutions.md` — 3 cartes par personnage
+  (forme 1 argent = base, forme 2 violet = Éveillé, forme 3 or full art = Divin) ; fusions sans évolution ;
+  dragon : la carte existante = forme 3 (Dragonnet → Dragon de Givre → Dragon de Givre Arcanique).
+  Anciennes planches de 4 : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
   Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
 
 ## Méthode pour les nouvelles images

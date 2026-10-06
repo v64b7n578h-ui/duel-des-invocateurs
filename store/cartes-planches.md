@@ -1,5 +1,7 @@
 # Les cartes par planches de 4 — Duel des Invocateurs
 
+> ⚠️ **Remplacé par `store/cartes-evolutions.md`** (lignes d'évolution : 3 cartes par personnage). Ce fichier reste comme archive.
+
 **7 images au lieu de 25.** Chaque image contient 4 cartes (grille 2 × 2). Colle un prompt par message dans la même conversation ChatGPT.
 
 ⚠️ Les cartes en planche sont un peu moins nettes qu'une carte seule (environ 512 × 768 pixels chacune) : parfait pour le jeu et les réseaux. Pour l'impression des **Légendaires et Arcanes Secrètes**, on pourra refaire ces quelques cartes en grand, une par une.
