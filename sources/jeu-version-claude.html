@@ -322,7 +322,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.4</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -625,7 +625,7 @@ function tutorial(i){
   const hole=r?`<div class="tut-hole" style="left:${r.left-6}px;top:${r.top-6}px;width:${r.width+12}px;height:${r.height+12}px"></div>`:'<div class="tut-dim"></div>';
   const below=!r||r.top<innerHeight/2;
   o.innerHTML=hole+`<div class="tut-b" style="${r?(below?`top:${r.bottom+16}px`:`bottom:${innerHeight-r.top+16}px`):'top:38%'}"><b>${st.t}</b><p>${st.b}</p><span>${i+1}/${TUT.length} · touche pour continuer</span></div>`;
-  o.onclick=()=>tutorial(i+1);
+  const t0=Date.now();o.onclick=()=>{if(Date.now()-t0>800)tutorial(i+1)};
 }
 
 /* ---------- Guide des règles ---------- */
@@ -641,10 +641,11 @@ const HELP=[
 ];
 function showHelp(i=0){
   const h=HELP[i];
-  modal(`<div style="font-size:48px">${h.ic}</div><h3 style="font-size:30px">${h.t}</h3><p style="text-align:left;line-height:1.5">${h.b}</p>
+  modal(`<div style="font-size:48px">${h.ic}</div><h3 style="font-size:30px">${h.t}</h3>${i===0?`<div class="note">Version ${VERSION}</div>`:''}<p style="text-align:left;line-height:1.5">${h.b}</p>
    <div style="display:flex;justify-content:center;gap:6px;margin:10px 0">${HELP.map((_,k)=>`<i style="width:8px;height:8px;border-radius:50%;background:${k===i?'var(--gold)':'var(--line)'}"></i>`).join('')}</div>
+   ${i===0?'<button class="ghost" id="hv" style="width:100%;margin-bottom:8px">🧭 Revoir la visite guidée</button>':''}
    <div class="btns" style="grid-template-columns:1fr 1fr">${i>0?'<button class="ghost" id="hp">‹ Précédent</button>':'<button class="ghost" data-close>Fermer</button>'}${i<HELP.length-1?'<button id="hn">Suivant ›</button>':'<button data-close>Compris !</button>'}</div>`,
-   box=>{const p=box.querySelector('#hp'),n=box.querySelector('#hn');if(p)p.onclick=()=>showHelp(i-1);if(n)n.onclick=()=>showHelp(i+1)});
+   box=>{const v=box.querySelector('#hv');if(v)v.onclick=()=>{closeModal();go('home');setTimeout(()=>tutorial(0),300)};const p=box.querySelector('#hp'),n=box.querySelector('#hn');if(p)p.onclick=()=>showHelp(i-1);if(n)n.onclick=()=>showHelp(i+1)});
 }
 function afterBoot(){if(S.needStarter)chooseStarter();else if(!S.tutV)tutorial(0)}
 
@@ -664,6 +665,7 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
+const VERSION='1.4';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];
