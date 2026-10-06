@@ -362,7 +362,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.8</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.9</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -747,7 +747,9 @@ setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=
 const RORD='CREL';
 const ALBUM=[...IDS.slice().sort((a,b)=>RORD.indexOf(DEFS[a].r)-RORD.indexOf(DEFS[b].r)||DEFS[a].c-DEFS[b].c),...FIDS];
 /* cartes dont l'illustration de collection existe (art/cartes/<id>.webp, faite avec tools/cartes.py) */
-const CARTES=['dragon','squelettes','gobelins','goule','chevalier'];
+const CARTES=['dragon','squelettes','gobelins','goule','chevalier','squelettes_b','gobelins_b','goule_b','chevalier_b'];
+/* version « Édition Brillante » quand le personnage est éveillé (Éveil 1 ou plus) */
+const cImg=id=>!FUS[id]&&evoOf(id)>=1&&CARTES.includes(id+'_b')?id+'_b':id;
 const RNAME={C:'Commune',R:'Rare',E:'Épique',L:'Légendaire',F:'Arcane Secrète'};
 const RCOL={C:'#c9c6d6',R:'#6fb7ff',E:'#c77dff',L:'#ffd56b',F:'#ffe9a8'};
 const cRar=id=>FUS[id]?'F':DEFS[id].r;
@@ -761,15 +763,15 @@ function howGet(id){if(FUS[id]){const m=FUS[id].mix;return`Fusion : ${DEFS[m[0]]
 function albumCard(id,big){
   const r=cRar(id),rc=RCOL[r];
   if(!cOwned(id))return`<div class="acard lock"><span class="num">${cNum(id)}</span><div class="q">?</div><div class="how">${howGet(id)}</div></div>`;
-  const shine=r==='L'||r==='F'||r==='E'?'shine':'';
-  if(CARTES.includes(id))return`<div class="acard ${shine}" data-card="${id}" style="--rc:${rc}"><img src="art/cartes/${id}.webp" alt="${esc(cName(id))}" loading="lazy"></div>`;
+  const shine=r==='L'||r==='F'||r==='E'||cImg(id)!==id?'shine':'';
+  if(CARTES.includes(id))return`<div class="acard ${shine}" data-card="${id}" style="--rc:${rc}"><img src="art/cartes/${cImg(id)}.webp" alt="${esc(cName(id))}" loading="lazy"></div>`;
   return`<div class="acard ph ${shine}" data-card="${id}" style="--rc:${rc}"><span class="num">${cNum(id)}</span><img src="art/${id}.webp" alt=""><div class="nm">${esc(cName(id))}<small>${RNAME[r].toUpperCase()}</small></div></div>`;
 }
 function renderAlbum(){
   const n=albumCount(),R=S.albumR||{};
   $('#s-album').innerHTML=`<h2>Album · Saison 1</h2>
    <div class="alb-head"><b style="font-size:20px">${n}/${ALBUM.length}</b><span class="prog"><i style="width:${n/ALBUM.length*100}%"></i></span><span class="note">cartes</span></div>
-   <p class="note" style="margin:0 0 8px">Chaque personnage débloqué et chaque fusion découverte ajoute sa carte à ton album. Les Épiques et plus sont holographiques : touche une carte pour l'admirer.</p>
+   <p class="note" style="margin:0 0 8px">Chaque personnage débloqué et chaque fusion découverte ajoute sa carte à ton album. Éveille un personnage pour obtenir sa carte en <b style="color:var(--gold)">Édition Brillante</b>. Les Épiques et plus sont holographiques : touche une carte pour l'admirer.</p>
    <div class="alb-goals">${ALB_GOALS.map(([k,g])=>{const ok=n>=k,got=R[k];return`<div class="quest ${got?'done':''}"><div class="tx"><b>Collectionne ${k} cartes</b><span class="note">+${g} Invoks</span><div class="prog"><i style="width:${Math.min(100,n/k*100)}%"></i></div></div>${got?'✔':ok?`<button data-ag="${k}">Prendre</button>`:`<span class="note">${Math.min(n,k)}/${k}</span>`}</div>`}).join('')}</div>
    ${['C','R','E','L','F'].map(r=>{const ids=ALBUM.filter(id=>cRar(id)===r);return`<h4 style="color:${RCOL[r]}">${RNAME[r]} <span class="note">${ids.filter(cOwned).length}/${ids.length}</span></h4><div class="alb-grid">${ids.map(id=>albumCard(id)).join('')}</div>`}).join('')}`;
 }
@@ -780,9 +782,9 @@ $('#s-album').addEventListener('click',e=>{
 });
 function viewCard(id){
   const r=cRar(id),D=FUS[id]||DEFS[id],v=document.createElement('div');v.className='viewer';
-  const img=CARTES.includes(id)?`<img src="art/cartes/${id}.webp" alt="">`:`<div class="acard ph" style="--rc:${RCOL[r]};width:100%;height:100%;border-radius:16px"><img src="art/${id}.webp" alt=""><div class="nm" style="font-size:18px">${esc(D.n)}<small style="font-size:12px">${RNAME[r].toUpperCase()}</small></div></div>`;
-  v.innerHTML=`<button class="x" aria-label="Fermer">✕</button><div class="big" style="--rc:${RCOL[r]}">${img}<div class="holo" style="--ho:${r==='C'?.12:r==='R'?.22:.45}"></div></div>
-   <div class="info"><b>${esc(D.n)}</b><div class="rtag" style="color:${RCOL[r]}">N° ${cNum(id)} · ${RNAME[r]}</div><p class="note">${esc(D.txt||'')}</p><p class="note">Bouge ton doigt sur la carte pour la faire briller.</p></div>`;
+  const img=CARTES.includes(id)?`<img src="art/cartes/${cImg(id)}.webp" alt="">`:`<div class="acard ph" style="--rc:${RCOL[r]};width:100%;height:100%;border-radius:16px"><img src="art/${id}.webp" alt=""><div class="nm" style="font-size:18px">${esc(D.n)}<small style="font-size:12px">${RNAME[r].toUpperCase()}</small></div></div>`;
+  v.innerHTML=`<button class="x" aria-label="Fermer">✕</button><div class="big" style="--rc:${RCOL[r]}">${img}<div class="holo" style="--ho:${cImg(id)!==id?.5:r==='C'?.12:r==='R'?.22:.45}"></div></div>
+   <div class="info"><b>${esc(D.n)}</b><div class="rtag" style="color:${RCOL[r]}">N° ${cNum(id)} · ${RNAME[r]}${cImg(id)!==id?' · <span style="color:var(--gold)">✦ Édition Brillante</span>':''}</div><p class="note">${esc(D.txt||'')}</p><p class="note">Bouge ton doigt sur la carte pour la faire briller.</p></div>`;
   document.body.appendChild(v);sfx('chest');
   const big=v.querySelector('.big'),holo=v.querySelector('.holo');
   const move=(cx,cy)=>{const b=big.getBoundingClientRect(),x=(cx-b.left)/b.width,y=(cy-b.top)/b.height;
@@ -1044,7 +1046,7 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
-const VERSION='1.8';
+const VERSION='1.9';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];

@@ -49,6 +49,9 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
 - `python3 tools/cartes.py [id]` → `cartes/apercu/<id>.png` (écran) et `cartes/imprimer/<id>.png` (63×88 mm + 3 mm de fond perdu, 300 dpi).
   Le générateur écrit aussi `art/cartes/<id>.webp` pour l'album du jeu : ajouter alors l'id à la liste `CARTES` dans la source.
   Numérotation = ordre `ALBUM` (raretés C→R→E→L puis 4 fusions « Arcane Secrète ») ; prompt de toute la série : `store/cartes-toutes.md`.
+  « Édition Brillante » : entrée `<id>_b` avec `"source":"<id>","edition":"Brillante"` (cadre doré, holo, rayons, éclats via `holo_fx`) ;
+  dans l'album, elle remplace la carte normale quand le personnage est éveillé (`cImg`).
+  Planches de 4 cartes : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
   Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
 
 ## Méthode pour les nouvelles images

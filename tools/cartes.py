@@ -62,11 +62,70 @@ def wrap(txt, fnt, maxw):
     return lines + ([cur] if cur else [])
 
 
+def holo_fx(im, z, seed=1):
+    """Édition Brillante : cadre doré, reflet holographique arc-en-ciel, rayons et éclats."""
+    import numpy as np, random
+    rnd = random.Random(seed)
+    W, H = im.size
+    a = np.asarray(im.convert('RGB')).astype(float)
+    mx, mn = a.max(2), a.min(2)
+    sat = (mx - mn) / np.maximum(mx, 1)
+    # zone de l'illustration (entre le bandeau du nom et l'encadré du bas)
+    tx0, ty0, tx1, ty1 = z['texte']
+    nx0, ny0, nx1, ny1 = z['nom']
+    art = np.zeros((H, W), bool); art[ny1 + 12:ty0 - 10, tx0 + 6:tx1 - 6] = True
+    inside_text = np.zeros((H, W), bool); inside_text[ty0 + 10:ty1 - 10, tx0 + 10:tx1 - 10] = True
+    card = np.zeros((H, W), bool); cx0, cy0, cx1, cy1 = z['carte']; card[cy0:cy1, cx0:cx1] = True
+    # 1) cadre : le métal argenté/bleuté devient or
+    frame = card & ~art & ~inside_text & (mx > 60)
+    lum = a.mean(2) / 255
+    gold = np.stack([255 * (.35 + .75 * lum), 205 * (.25 + .8 * lum), 95 * (.15 + .9 * lum)], 2).clip(0, 255)
+    mxc, myc, mr = z['medaillon']
+    med = ((X0 := np.arange(W)[None, :]) - mxc) ** 2 + (np.arange(H)[:, None] - myc) ** 2 <= (mr * 1.08) ** 2
+    k = np.maximum(frame * np.clip(1.2 - sat * 1.4, 0, 1), med * .85)[..., None] * .92
+    a = a * (1 - k) + gold * k
+    # 2) reflet holographique en bandes diagonales (sur toute la carte, plus fort sur le cadre)
+    Y, X = np.mgrid[0:H, 0:W]
+    t = (X * .9 + Y * .55) / 95.0
+    rain = np.stack([np.sin(t) * .5 + .5, np.sin(t + 2.1) * .5 + .5, np.sin(t + 4.2) * .5 + .5], 2) * 255
+    band = (np.sin((X + Y * .6) / 260.0) * .5 + .5) ** 3
+    amt = ((.35 + band * .65) * np.where(frame, .42, .30) * card * ~inside_text)[..., None]
+    a = 255 - (255 - a) * (1 - amt * rain / 255)          # mode « superposition écran »
+    out = Image.fromarray(a.clip(0, 255).astype('uint8')).convert('RGBA')
+    # 3) rayons de lumière derrière le personnage
+    rays = Image.new('L', (W, H), 0); dr = ImageDraw.Draw(rays)
+    cx, cy = (tx0 + tx1) / 2, ny1 + 60
+    for i in range(18):
+        ang = math.pi * (.08 + .84 * i / 17) + rnd.uniform(-.03, .03)
+        w = rnd.uniform(.025, .05)
+        L = 1600
+        dr.polygon([(cx, cy), (cx + math.cos(ang - w) * L, cy + math.sin(ang - w) * L), (cx + math.cos(ang + w) * L, cy + math.sin(ang + w) * L)], fill=rnd.randint(55, 110))
+    rays = rays.filter(ImageFilter.GaussianBlur(14))
+    m = Image.fromarray((np.asarray(rays) * art).astype('uint8'))
+    out.alpha_composite(Image.merge('RGBA', (Image.new('L', (W, H), 255), Image.new('L', (W, H), 240), Image.new('L', (W, H), 200), m)))
+    # 4) éclats scintillants
+    sp = Image.new('RGBA', (W, H), (0, 0, 0, 0)); ds = ImageDraw.Draw(sp)
+    for _ in range(70):
+        x, y = rnd.randint(cx0 + 10, cx1 - 10), rnd.randint(cy0 + 10, cy1 - 10)
+        if inside_text[y, x]: continue
+        r = rnd.choice([6, 8, 10, 14, 20, 28])
+        col = rnd.choice([(255, 255, 255), (255, 240, 190), (200, 235, 255), (255, 210, 250)])
+        star(ds, x, y, r, col + (rnd.randint(170, 255),))
+        ds.ellipse((x - r * .18, y - r * .18, x + r * .18, y + r * .18), fill=(255, 255, 255, 255))
+    glow = sp.filter(ImageFilter.GaussianBlur(4))
+    out.alpha_composite(glow); out.alpha_composite(sp)
+    return out
+
+
 def render(cid, c, serie, total):
-    im = Image.open(R / 'cartes' / 'sources' / f'{cid}.png').convert('RGBA')
+    im = Image.open(R / 'cartes' / 'sources' / f'{c.get("source", cid)}.png').convert('RGBA')
     z = c['zones']
+    if c.get('edition') == 'Brillante':
+        im = holo_fx(im, z, seed=c['num'])
     d = ImageDraw.Draw(im)
     n_stars, rcol = RARE[c['rarete']]
+    if c.get('edition'):
+        rcol = '#ffd56b'
 
     # --- coût dans le médaillon ---
     mx, my, mr = z['medaillon']
@@ -89,7 +148,11 @@ def render(cid, c, serie, total):
     for i in range(n_stars):
         star(d, x0 + pad + 12 + i * 26, cy, 12, rcol)
     tx = x0 + pad + n_stars * 26 + 6
-    d.text((tx, cy), f"{c['rarete'].upper()}  ·  {c['type'].upper()}", font=font(B8, 23), fill=rcol, anchor='lm')
+    lab = f"{c['rarete'].upper()}  ·  {c['type'].upper()}"
+    if c.get('edition'):
+        lab = f"ÉDITION {c['edition'].upper()}  ·  " + lab
+        rcol = '#ffd56b'
+    d.text((tx, cy), lab, font=font(B8, 23), fill=rcol, anchor='lm')
     # stats à droite
     fs, fl = font(B8, 30), font(B7, 19)
     pv, atk = str(c['pv']), str(c['atk'])
