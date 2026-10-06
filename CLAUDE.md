@@ -51,11 +51,11 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
   Numérotation = ordre `ALBUM` (raretés C→R→E→L puis 4 fusions « Arcane Secrète ») ; prompt de toute la série : `store/cartes-toutes.md`.
   « Édition Brillante » : entrée `<id>_b` avec `"source":"<id>","edition":"Brillante"` (cadre doré, holo, rayons, éclats via `holo_fx`) ;
   dans l'album, elle remplace la carte normale quand le personnage est éveillé (`cImg`).
-  LIGNES D'ÉVOLUTION (remplacent planches et Brillantes) : `store/cartes-evolutions.md` — 3 cartes par personnage
-  (forme 1 argent = base, forme 2 violet = Éveillé, forme 3 or full art = Divin) ; fusions sans évolution ;
-  dragon : la carte existante = forme 1 (→ Dragon des Glaces Ancien → Dragon Arcanique Céleste).
-  Personnages évolués en combat : `store/personnages-evolutions.md` → `art/<id>_2.webp` (Éveillé) et `art/<id>_3.webp` (Divin),
-  puis ajouter l'id à `EVART` dans la source (`picKey()` choisit l'image ; repli sur l'image de base).
+  LIGNES D'ÉVOLUTION : `store/cartes-evolutions.md` — 1 prompt par personnage = 1 image avec ses 3 cartes
+  (forme 1 argent = base, forme 2 violet = Éveillé, forme 3 or full art = Divin) ; fusions sans évolution.
+  Mémoire ChatGPT : message « Étape 0 » + planche `store/references/personnages-reference.jpg` (22 persos numérotés).
+  Apparence évoluée en combat : code prêt (`EVART`, `picKey()`, images `art/<id>_2|_3.webp`) mais images à faire plus tard
+  (le détourage depuis les cartes full art ne marche pas).
   Carte de forme : entrée `<id>_2` / `<id>_3` avec `"forme":2|3` dans cartes.json (étiquette FORME 2 · ÉVEILLÉE / FORME 3 · DIVINE,
   stats ×1,15 / ×1,45) ; ajouter l'id à `CARTES` ; noms des formes dans `FNAME` ; l'album montre la ligne (`FORMS`, `formOK`).
   Anciennes planches de 4 : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
