@@ -3,11 +3,46 @@
   "total": 26,
   "cartes": {
     "dragon": {
-      "num": 7, "nom": "Dragon de Givre Arcanique", "cout": 4, "rarete": "Légendaire", "type": "Dragon volant",
-      "atk": 85, "pv": 620,
-      "attaque": ["Souffle de givre", "touche plusieurs ennemis et les ralentit."],
-      "ultime": ["Souffle du blizzard", "un cône géant de givre gèle tout sur son passage."],
-      "zones": {"medaillon": [118, 113, 72], "nom": [222, 84, 905, 166], "texte": [96, 1236, 934, 1442], "carte": [18, 18, 1006, 1518]}
+      "num": 20,
+      "nom": "Dragon de Givre Arcanique",
+      "cout": 4,
+      "rarete": "Légendaire",
+      "type": "Dragon volant",
+      "atk": 85,
+      "pv": 620,
+      "attaque": [
+        "Souffle de givre",
+        "touche plusieurs ennemis et les ralentit."
+      ],
+      "ultime": [
+        "Souffle du blizzard",
+        "un cône géant de givre gèle tout sur son passage."
+      ],
+      "zones": {
+        "medaillon": [
+          118,
+          113,
+          72
+        ],
+        "nom": [
+          222,
+          84,
+          905,
+          166
+        ],
+        "texte": [
+          96,
+          1236,
+          934,
+          1442
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
     }
   }
 }

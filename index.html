@@ -69,6 +69,31 @@ button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line
 .offer button{padding:9px 10px;font-size:13px;white-space:nowrap}
 .offer.iap{border-style:dashed}
 .gem{color:#e3c8ff}
+/* ---- album de collection ---- */
+.alb-head{display:flex;align-items:center;gap:12px;margin:4px 0 10px}
+.alb-head .prog{flex:1;height:10px}
+.alb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px}
+.acard{position:relative;aspect-ratio:2/3;border-radius:9px;overflow:hidden;cursor:pointer;background:#0b0814;box-shadow:0 4px 10px #0008}
+.acard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.acard .num{position:absolute;left:5px;top:4px;font:800 10px var(--body);color:#fff;text-shadow:0 1px 2px #000;z-index:2}
+.acard.lock{cursor:default;background:repeating-linear-gradient(135deg,#1d1630,#1d1630 8px,#181226 8px,#181226 16px);border:2px dashed #ffffff22}
+.acard.lock .q{position:absolute;inset:0;display:grid;place-items:center;font:800 34px var(--display);color:#ffffff30}
+.acard.lock .how{position:absolute;left:4px;right:4px;bottom:6px;text-align:center;font:700 9.5px/1.15 var(--body);color:var(--muted)}
+.acard.ph{border:3px solid var(--rc)}
+.acard.ph img{object-fit:cover;object-position:50% 20%;height:72%;background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--rc) 45%,#0000),#0000 70%)}
+.acard.ph .nm{position:absolute;left:0;right:0;bottom:0;height:28%;background:linear-gradient(#1d1630,#120e1c);padding:4px;font:800 10.5px/1.1 var(--body);color:#fff;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.acard.ph .nm small{color:var(--rc);font-size:9px;letter-spacing:.06em}
+.acard.shine::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(115deg,#0000 30%,#ffffff55 45%,#a8e3ff44 50%,#ffb3f055 55%,#0000 70%);background-size:250% 250%;animation:shine 3.5s ease-in-out infinite;mix-blend-mode:screen;pointer-events:none}
+@keyframes shine{0%{background-position:120% 120%}60%,100%{background-position:-60% -60%}}
+.rtag{font:800 10px var(--body);letter-spacing:.08em;text-transform:uppercase}
+.alb-goals{display:grid;gap:8px;margin:6px 0 14px}
+.viewer{position:fixed;inset:0;z-index:62;background:radial-gradient(circle at 50% 40%,#2a1d4dee,#07050cf5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;perspective:900px;touch-action:none}
+.viewer .big{position:relative;width:min(78vw,340px);aspect-ratio:2/3;border-radius:16px;overflow:hidden;transform-style:preserve-3d;transition:transform .08s linear;box-shadow:0 20px 50px #000c,0 0 40px var(--rc)}
+.viewer .big img{width:100%;height:100%;object-fit:cover;display:block}
+.viewer .holo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:var(--ho,.35);background:radial-gradient(circle at var(--mx,50%) var(--my,50%),#ffffffaa 0,#0000 35%),linear-gradient(var(--ang,115deg),#ff00e055,#00e5ff55,#ffe60055,#00ff9555,#ff00e055);background-size:100% 100%,300% 300%;background-position:0 0,var(--mx,50%) var(--my,50%)}
+.viewer .info{max-width:360px;text-align:center;color:var(--ink)}
+.viewer .info b{font-family:var(--display);font-size:26px;color:var(--gold)}
+.viewer .x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;background:#0008;color:#fff;border:1px solid #fff4;border-radius:50%;width:42px;height:42px;padding:0;font-size:20px}
 .slots{position:absolute;z-index:5;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .slot{position:relative;height:74px;border-radius:12px;background:linear-gradient(#3b2d5ecc,#1d1630ee);border:2px solid #000;box-shadow:inset 0 2px 0 #ffffff22,0 3px 0 #000a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;font-weight:800;font-size:11px;text-shadow:0 1px 0 #000;cursor:pointer;text-align:center;line-height:1.1;font-variant-numeric:tabular-nums}
 .slot.empty{background:#0007;border-style:dashed;border-color:#ffffff33;color:#ffffff66;font-weight:700;cursor:default}
@@ -329,6 +354,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
     <section id="s-prof" hidden></section>
     <section id="s-shop" class="shop" hidden></section>
     <section id="s-season" hidden></section>
+    <section id="s-album" hidden></section>
     <section id="s-battle" hidden>
       <div class="hud"><span class="crowns" id="ecr">👑 0</span><span class="who" id="ename"></span><span class="timer" id="timer">3:00</span></div>
       <div class="stage" id="stage"><canvas id="cv"></canvas></div>
@@ -349,7 +375,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.7</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.8</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -647,7 +673,7 @@ function setTop(){try{navDots()}catch(e){}
 
 /* ---------- Navigation ---------- */
 function go(s){
-  $('#s-home').hidden=s!=='home';$('#s-deck').hidden=s!=='deck';$('#s-prof').hidden=s!=='prof';$('#s-shop').hidden=s!=='shop';$('#s-season').hidden=s!=='season';if(s==='season')renderSeason();$('#s-battle').hidden=s!=='battle';
+  $('#s-home').hidden=s!=='home';$('#s-deck').hidden=s!=='deck';$('#s-prof').hidden=s!=='prof';$('#s-shop').hidden=s!=='shop';$('#s-season').hidden=s!=='season';if(s==='season')renderSeason();$('#s-album').hidden=s!=='album';if(s==='album')renderAlbum();$('#s-battle').hidden=s!=='battle';
   if(s==='shop')renderShop();
   if(s==='prof')renderProf();
   document.body.classList.toggle('home',s==='home');
@@ -680,6 +706,7 @@ function renderHome(){
     </div>
     <div class="side l">
       <button class="rb" data-b="daily"><span class="c">🎁</span>Coffre${can?'<span class="dot">!</span>':''}</button>
+      <button class="rb" data-b="album"><span class="c">🃏</span>Album${albumClaimable()?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="season"><span class="c">📖</span>Saison${sOk?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="prof"><span class="c">${avPic(S.avatar)}</span>Profil</button>
     </div>
@@ -721,13 +748,63 @@ $('#s-home').addEventListener('click',e=>{
   if(S.needStarter){chooseStarter();return}
   if(b==='help'){showHelp(0);return}
   if(b==='fight')chooseMode();
-  else if(b==='shop'||b==='deck'||b==='season'||b==='prof')go(b);
+  else if(b==='shop'||b==='deck'||b==='season'||b==='prof'||b==='album')go(b);
   else if(b==='maps')showMaps();
   else if(b==='daily'){if(S.daily===today())modal(`<h3>Coffre du jour</h3><p class="note">Déjà ouvert aujourd'hui. Reviens demain : ta série est de ${S.streak} jour${S.streak>1?'s':''}.</p><div class="btns"><button data-close>OK</button></div>`);else claimDaily()}
   else if(b==='fs'){if(canFS()&&!isIOS())goFS();else modal(`<h3>Plein écran</h3>${installTip()}<div class="btns"><button data-close>Compris</button></div>`)}
   else if(b==='king'){const st=mineStock();modal(`<h3>Château</h3><p class="note">Ton château produit <b>${mineRate()} 🪙 par heure</b>, même quand tu ne joues pas (jusqu'à ${mineCap()} 🪙, soit 8 heures). Monte de niveau pour produire plus.</p><div class="big">${st} / ${mineCap()} 🪙</div><div class="btns">${st>=1?'<button id="col">Récolter</button>':''}<button class="ghost" data-close>Fermer</button></div>`,bx=>{const c=bx.querySelector('#col');if(c)c.onclick=()=>{closeModal();collectMine()}})}
 });
 setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=$('#bub'),st=mineStock();if((!b&&st>=1)||(b&&!b.textContent.includes('+'+st)))renderHome()}catch(e){}},15000);
+
+/* ---------- Album de collection (26 cartes) ---------- */
+const RORD='CREL';
+const ALBUM=[...IDS.slice().sort((a,b)=>RORD.indexOf(DEFS[a].r)-RORD.indexOf(DEFS[b].r)||DEFS[a].c-DEFS[b].c),...FIDS];
+/* cartes dont l'illustration de collection existe (art/cartes/<id>.webp, faite avec tools/cartes.py) */
+const CARTES=['dragon'];
+const RNAME={C:'Commune',R:'Rare',E:'Épique',L:'Légendaire',F:'Arcane Secrète'};
+const RCOL={C:'#c9c6d6',R:'#6fb7ff',E:'#c77dff',L:'#ffd56b',F:'#ffe9a8'};
+const cRar=id=>FUS[id]?'F':DEFS[id].r;
+const cOwned=id=>FUS[id]?!!S.fus[id]:owned(id);
+const cNum=id=>String(ALBUM.indexOf(id)+1).padStart(3,'0');
+const cName=id=>(FUS[id]||DEFS[id]).n;
+const ALB_GOALS=[[6,40],[10,80],[15,150],[20,250],[26,600]];
+const albumCount=()=>ALBUM.filter(cOwned).length;
+const albumClaimable=()=>{try{return ALB_GOALS.some(([n])=>albumCount()>=n&&!(S.albumR||{})[n])}catch(e){return false}};
+function howGet(id){if(FUS[id]){const m=FUS[id].mix;return`Fusion : ${DEFS[m[0]].n} + ${DEFS[m[1]].n}`}const q=NEWREQ[id];return q?`Niveau ${q.lv} ou ${q.gems} Invoks`:'Carte de départ'}
+function albumCard(id,big){
+  const r=cRar(id),rc=RCOL[r];
+  if(!cOwned(id))return`<div class="acard lock"><span class="num">${cNum(id)}</span><div class="q">?</div><div class="how">${howGet(id)}</div></div>`;
+  const shine=r==='L'||r==='F'||r==='E'?'shine':'';
+  if(CARTES.includes(id))return`<div class="acard ${shine}" data-card="${id}" style="--rc:${rc}"><img src="art/cartes/${id}.webp" alt="${esc(cName(id))}" loading="lazy"></div>`;
+  return`<div class="acard ph ${shine}" data-card="${id}" style="--rc:${rc}"><span class="num">${cNum(id)}</span><img src="art/${id}.webp" alt=""><div class="nm">${esc(cName(id))}<small>${RNAME[r].toUpperCase()}</small></div></div>`;
+}
+function renderAlbum(){
+  const n=albumCount(),R=S.albumR||{};
+  $('#s-album').innerHTML=`<h2>Album · Saison 1</h2>
+   <div class="alb-head"><b style="font-size:20px">${n}/${ALBUM.length}</b><span class="prog"><i style="width:${n/ALBUM.length*100}%"></i></span><span class="note">cartes</span></div>
+   <p class="note" style="margin:0 0 8px">Chaque personnage débloqué et chaque fusion découverte ajoute sa carte à ton album. Les Épiques et plus sont holographiques : touche une carte pour l'admirer.</p>
+   <div class="alb-goals">${ALB_GOALS.map(([k,g])=>{const ok=n>=k,got=R[k];return`<div class="quest ${got?'done':''}"><div class="tx"><b>Collectionne ${k} cartes</b><span class="note">+${g} Invoks</span><div class="prog"><i style="width:${Math.min(100,n/k*100)}%"></i></div></div>${got?'✔':ok?`<button data-ag="${k}">Prendre</button>`:`<span class="note">${Math.min(n,k)}/${k}</span>`}</div>`}).join('')}</div>
+   ${['C','R','E','L','F'].map(r=>{const ids=ALBUM.filter(id=>cRar(id)===r);return`<h4 style="color:${RCOL[r]}">${RNAME[r]} <span class="note">${ids.filter(cOwned).length}/${ids.length}</span></h4><div class="alb-grid">${ids.map(id=>albumCard(id)).join('')}</div>`}).join('')}`;
+}
+$('#s-album').addEventListener('click',e=>{
+  const g=e.target.closest('[data-ag]');if(g){const k=+g.dataset.ag,gg=ALB_GOALS.find(x=>x[0]===k);S.albumR=S.albumR||{};if(S.albumR[k]||albumCount()<k)return;S.albumR[k]=1;S.gems+=gg[1];persist();setTop();sfx('chest');renderAlbum();
+    modal(`<h3>Collectionneur !</h3><div class="big">+${gg[1]} ${CI}</div><p class="note">${k} cartes dans ton album.</p><div class="btns"><button data-close>Super</button></div>`);return}
+  const c=e.target.closest('[data-card]');if(c)viewCard(c.dataset.card);
+});
+function viewCard(id){
+  const r=cRar(id),D=FUS[id]||DEFS[id],v=document.createElement('div');v.className='viewer';
+  const img=CARTES.includes(id)?`<img src="art/cartes/${id}.webp" alt="">`:`<div class="acard ph" style="--rc:${RCOL[r]};width:100%;height:100%;border-radius:16px"><img src="art/${id}.webp" alt=""><div class="nm" style="font-size:18px">${esc(D.n)}<small style="font-size:12px">${RNAME[r].toUpperCase()}</small></div></div>`;
+  v.innerHTML=`<button class="x" aria-label="Fermer">✕</button><div class="big" style="--rc:${RCOL[r]}">${img}<div class="holo" style="--ho:${r==='C'?.12:r==='R'?.22:.45}"></div></div>
+   <div class="info"><b>${esc(D.n)}</b><div class="rtag" style="color:${RCOL[r]}">N° ${cNum(id)} · ${RNAME[r]}</div><p class="note">${esc(D.txt||'')}</p><p class="note">Bouge ton doigt sur la carte pour la faire briller.</p></div>`;
+  document.body.appendChild(v);sfx('chest');
+  const big=v.querySelector('.big'),holo=v.querySelector('.holo');
+  const move=(cx,cy)=>{const b=big.getBoundingClientRect(),x=(cx-b.left)/b.width,y=(cy-b.top)/b.height;
+    big.style.transform=`rotateY(${(x-.5)*28}deg) rotateX(${(.5-y)*28}deg)`;holo.style.setProperty('--mx',x*100+'%');holo.style.setProperty('--my',y*100+'%');holo.style.setProperty('--ang',(90+x*60)+'deg')};
+  v.addEventListener('pointermove',e=>move(e.clientX,e.clientY));
+  let t=0;const auto=setInterval(()=>{if(!document.body.contains(v))return clearInterval(auto);t+=.05;const b=big.getBoundingClientRect();if(!v.matches(':active'))move(b.left+b.width*(.5+Math.sin(t)*.35),b.top+b.height*(.5+Math.cos(t*.7)*.3))},40);
+  v.addEventListener('pointerdown',()=>clearInterval(auto),{once:true});
+  v.querySelector('.x').onclick=()=>{clearInterval(auto);v.remove()};
+}
 
 /* ---------- Choix des héros de départ ---------- */
 function chooseStarter(){
@@ -748,6 +825,7 @@ const TUT=[
  {sel:'#b-king',t:'Ton château',b:'Il produit de l\'or toutes les heures, même quand tu ne joues pas. Touche la bulle de pièces pour récolter.'},
  {sel:'.side.r [data-b="deck"]',t:'Ton deck',b:'Tes 8 cartes de combat. Ici tu les fais monter de niveau, tu les éveilles, et tu débloques de nouveaux personnages.'},
  {sel:'.bigb.shp',t:'Boutique',b:'Achète des personnages, des coffres et des effets avec tes Invoks.'},
+ {sel:'.side.l [data-b="album"]',t:'Album de collection',b:'Chaque personnage que tu débloques ajoute sa carte à ton album. Complète la collection pour gagner des Invoks !'},
  {sel:'.side.l [data-b="season"]',t:'Quêtes et saison',b:'3 quêtes chaque jour et 30 paliers de récompenses à gagner.'},
  {sel:'.side.r [data-b="help"]',t:'Besoin d\'aide ?',b:'Toutes les règles sont expliquées ici, à tout moment. Bonne chance !'},
 ];
@@ -979,7 +1057,7 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
-const VERSION='1.7';
+const VERSION='1.8';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];

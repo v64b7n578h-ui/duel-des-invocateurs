@@ -126,6 +126,10 @@ def render(cid, c, serie, total):
 
     out_a = R / 'cartes' / 'apercu' / f'{cid}.png'
     im.save(out_a)
+    # version pour l'album du jeu (art/cartes/<id>.webp), coupée au contour de la carte
+    (R / 'art' / 'cartes').mkdir(exist_ok=True)
+    g = im.crop(tuple(z['carte'])).resize((480, 729), Image.LANCZOS)
+    g.save(R / 'art' / 'cartes' / f'{cid}.webp', 'WEBP', quality=86, method=6)
 
     # --- fichier imprimeur ---
     cx0, cy0, cx1, cy1 = z['carte']

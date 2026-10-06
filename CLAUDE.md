@@ -36,6 +36,7 @@ Modes : COMBAT ouvre `chooseMode()` → En ligne (partie rapide, salon `duelinvo
 `duelinvoc-room-XXXX`), Contre l'ordinateur. En ligne = PeerJS/WebRTC (`vendor/peerjs.min.js`, serveur de signalisation gratuit PeerJS) :
 l'hôte simule (`hostSend`, ~15 états/s), l'invité affiche l'arène retournée (`mirror()`, `guestSnap`, `guestTick`) et envoie ses invocations.
 Test local à deux onglets : adresse terminée par `#localtest` (BroadcastChannel). Ne marche pas dans l'artifact Claude (WebRTC bloqué).
+Album de collection (bouton Album du village, `renderAlbum`, `viewCard` avec effet holographique, objectifs `ALB_GOALS`).
 Combat temps réel (3 tours/camp, élixir, deck de 8), 26 personnages avec attaque + pouvoir ultime,
 4 fusions, 6 arènes, niveau joueur, trophées, Éveil (3 évolutions), monnaie premium « Invok »,
 boutique (personnages, coffres, packs, effets d'invocation, bonus), coffre du jour, 3 quêtes/jour,
@@ -46,6 +47,8 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
 - Prompts : `store/cartes-a-collectionner.md`. Illustrations ChatGPT (zones vides) dans `cartes/sources/<id>.png`.
 - Textes et positions des zones (médaillon, bandeau du nom, encadré, contour de carte) : `cartes/cartes.json`.
 - `python3 tools/cartes.py [id]` → `cartes/apercu/<id>.png` (écran) et `cartes/imprimer/<id>.png` (63×88 mm + 3 mm de fond perdu, 300 dpi).
+  Le générateur écrit aussi `art/cartes/<id>.webp` pour l'album du jeu : ajouter alors l'id à la liste `CARTES` dans la source.
+  Numérotation = ordre `ALBUM` (raretés C→R→E→L puis 4 fusions « Arcane Secrète ») ; prompt de toute la série : `store/cartes-toutes.md`.
   Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
 
 ## Méthode pour les nouvelles images
