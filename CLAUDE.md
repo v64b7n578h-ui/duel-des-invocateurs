@@ -56,6 +56,8 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
   dragon : la carte existante = forme 1 (→ Dragon des Glaces Ancien → Dragon Arcanique Céleste).
   Personnages évolués en combat : `store/personnages-evolutions.md` → `art/<id>_2.webp` (Éveillé) et `art/<id>_3.webp` (Divin),
   puis ajouter l'id à `EVART` dans la source (`picKey()` choisit l'image ; repli sur l'image de base).
+  Carte de forme : entrée `<id>_2` / `<id>_3` avec `"forme":2|3` dans cartes.json (étiquette FORME 2 · ÉVEILLÉE / FORME 3 · DIVINE,
+  stats ×1,15 / ×1,45) ; ajouter l'id à `CARTES` ; noms des formes dans `FNAME` ; l'album montre la ligne (`FORMS`, `formOK`).
   Anciennes planches de 4 : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
   Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
 
