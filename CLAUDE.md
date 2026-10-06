@@ -42,6 +42,12 @@ boutique (personnages, coffres, packs, effets d'invocation, bonus), coffre du jo
 Grimoire de saison (30 paliers gratuit + premium), profil et avatars, plein écran / ajout à l'écran d'accueil.
 Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du navigateur (clé `invoc-cr`).
 
+## Cartes à collectionner (impression)
+- Prompts : `store/cartes-a-collectionner.md`. Illustrations ChatGPT (zones vides) dans `cartes/sources/<id>.png`.
+- Textes et positions des zones (médaillon, bandeau du nom, encadré, contour de carte) : `cartes/cartes.json`.
+- `python3 tools/cartes.py [id]` → `cartes/apercu/<id>.png` (écran) et `cartes/imprimer/<id>.png` (63×88 mm + 3 mm de fond perdu, 300 dpi).
+  Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
+
 ## Méthode pour les nouvelles images
 - Demander à ChatGPT un fond NOIR UNI (#000000) ; ses « fonds transparents » sont des damiers dessinés.
 - Nouvelle arène : joindre `art/arena.webp` d'origine (941×1672) et demander EXACTEMENT la même disposition
