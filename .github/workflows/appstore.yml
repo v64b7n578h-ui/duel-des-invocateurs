@@ -1,0 +1,62 @@
+name: Envoyer sur l'App Store (TestFlight)
+
+# Se lance à la main : onglet Actions → « Envoyer sur l'App Store » → Run workflow.
+# Secrets nécessaires (Settings → Secrets and variables → Actions) :
+#   APPLE_TEAM_ID        identifiant d'équipe (10 caractères), visible sur developer.apple.com → Membership
+#   ASC_KEY_ID           ID de la clé API App Store Connect
+#   ASC_ISSUER_ID        Issuer ID de la clé API
+#   ASC_KEY_P8           contenu complet du fichier .p8 téléchargé (-----BEGIN PRIVATE KEY----- …)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testflight:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm }
+
+      - name: Vérifier les secrets
+        env:
+          T: ${{ secrets.APPLE_TEAM_ID }}
+          K: ${{ secrets.ASC_KEY_ID }}
+          I: ${{ secrets.ASC_ISSUER_ID }}
+          P: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          for v in T K I P; do
+            if [ -z "${!v}" ]; then echo "::error::Un secret manque. Voir les instructions en haut de ce fichier."; exit 1; fi
+          done
+
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync ios
+
+      - name: Préparer la clé API Apple
+        env:
+          P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p ~/private_keys
+          printf '%s\n' "$P8" > ~/private_keys/AuthKey.p8
+
+      - name: Fabriquer l'appli signée
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/App.xcarchive archive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey.p8 \
+            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION="$(node -p "require('./package.json').version")" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+
+      - name: Envoyer à App Store Connect
+        run: |
+          xcodebuild -exportArchive -archivePath build/App.xcarchive \
+            -exportOptionsPlist ios/ExportOptions.plist -exportPath build/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey.p8 \
+            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}"

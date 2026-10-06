@@ -19,6 +19,8 @@ avec des personnages illustrés générés sur ChatGPT. Réponds en français, s
 - `capacitor.config.json` (appId `io.github.v64b7n578hui.invocateurs`), projets natifs `android/` et `ios/`.
 - `npm run build` : régénère `index.html` puis `www/` (copie embarquée dans l'appli). `npx cap sync` copie `www/` dans les projets natifs.
 - `.github/workflows/applis.yml` : à chaque push, GitHub fabrique l'APK Android de test (artefact) et vérifie la compilation iPhone.
+- `.github/workflows/appstore.yml` : envoi manuel sur TestFlight (signature automatique via clé API App Store Connect ;
+  secrets GitHub APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8). Le numéro de build = numéro du run.
 - Dans l'appli (`NATIVE` vrai) : les faux packs en € et la fausse pub sont masqués (achats réels pas encore branchés).
 - `privacy.html` : politique de confidentialité (URL publique pour les stores). `store/fiche-store.md` : textes des stores.
 
