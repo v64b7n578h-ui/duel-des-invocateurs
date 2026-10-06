@@ -8,6 +8,8 @@ Comme une créature qui évolue (petite → moyenne → énorme), **chaque perso
 | **Forme 2** (éveillée) | Violet holographique | débloquée à l'**Éveil** ✦ |
 | **Forme 3** (divine) | Or « full art » arc-en-ciel, comme le Dragon | débloquée au rang **Divin** ✦✦✦ — la plus rare |
 
+Exception : le Dragon (020) garde sa belle carte dorée comme forme 1.
+
 Les 4 fusions (cartes 023 à 026) n'évoluent pas : ce sont déjà des formes ultimes.
 
 ## Comment faire
@@ -470,22 +472,20 @@ Au milieu, forme 2 « Titan de Magma » : géant de lave plus massif, petits vol
 À droite, forme 3 « Seigneur du Volcan » : colosse couronné de lave, volcan en éruption derrière lui, ciel rouge, pluie de feu.
 ```
 
-## 020 · Dragonnet de Givre → Dragon de Givre → Dragon de Givre Arcanique
-Ta carte du Dragon blanc **est la forme 3** ! Joins-la : ChatGPT fait seulement les 2 formes plus jeunes.
+## 020 · Dragon de Givre Arcanique → Dragon des Glaces Ancien → Dragon Arcanique Céleste
+Ta carte du Dragon blanc **est la forme 1** (c'est un légendaire, il garde son cadre doré). Joins-la : ChatGPT fait les formes 2 et 3.
 
 ```
-La carte jointe est la forme 3 (finale) d'une ligne d'évolution pour mon jeu de fantasy « Duel des Invocateurs ». Crée les 2 formes précédentes, plus jeunes, du MÊME dragon (mêmes couleurs blanc nacré et bleu glacier, mêmes runes, mêmes cristaux).
+La carte jointe est la forme 1 d'une ligne d'évolution pour mon jeu de fantasy « Duel des Invocateurs ». Crée les 2 formes suivantes, encore plus puissantes, du MÊME dragon (mêmes couleurs blanc nacré et bleu glacier, mêmes runes, mêmes cristaux).
 Image au format paysage 3:2. Les 2 cartes sont côte à côte, au format portrait, EXACTEMENT de la même taille et de la même forme que la carte jointe, bien droites, vues de face, bords arrondis, séparées par une bande NOIRE UNIE (#000000), avec du noir tout autour. Elles occupent toute la hauteur de l'image.
 
 Sur CHAQUE carte, la même disposition que la carte jointe : médaillon rond VIDE en haut à gauche, bandeau horizontal VIDE en haut, grand encadré semi-transparent VIDE en bas, cadre ornementé de runes avec un petit cristal au centre en haut.
 AUCUN texte, AUCUNE lettre, AUCUN chiffre, AUCUN logo nulle part.
 
-Style : peinture numérique semi-réaliste et stylisée, comme une splash art de jeu MOBA haut de gamme, couleurs riches, éclairage dramatique, très détaillé. Design 100 % original.
+Style IDENTIQUE à la carte jointe : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le dragon sort du cadre (effet 3D). La forme 3 doit être encore plus spectaculaire que la forme 2.
 
-TRÈS IMPORTANT : cadre ARGENT pour la carte de gauche, cadre VIOLET pour la carte de droite.
-
-À gauche, forme 1 « Dragonnet de Givre » : cadre ARGENT simple, illustration dans une fenêtre sur la moitié haute, fond peint doux, sans effet brillant. Un bébé dragon blanc nacré mignon mais fier, petites ailes de cristal, souffle de petits flocons bleus, assis sur un rocher de glace.
-À droite, forme 2 « Dragon de Givre » : cadre VIOLET et argent, fond holographique violet et bleu brillant, le dragon déborde un peu de sa fenêtre. Un jeune dragon blanc nacré aux reflets bleu glacier, ailes de cristal plus grandes, runes bleues qui commencent à briller, souffle de givre.
+À gauche, forme 2 « Dragon des Glaces Ancien » : dragon blanc nacré encore plus grand, cornes de cristal de glace, armure de glace sur le poitrail, runes bleues éclatantes, souffle arcanique bleu.
+À droite, forme 3 « Dragon Arcanique Céleste » : dragon cosmique blanc et bleu gigantesque, ailes faites de galaxie et de cristal, couronne de runes flottantes, aura d'étoiles.
 ```
 
 ## 021 · Gardien Céleste → Archange Gardien → Séraphin Divin

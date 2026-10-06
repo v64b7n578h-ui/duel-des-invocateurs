@@ -53,7 +53,9 @@ Achats réels non branchés (gratuits en démo). Sauvegarde : localStorage du na
   dans l'album, elle remplace la carte normale quand le personnage est éveillé (`cImg`).
   LIGNES D'ÉVOLUTION (remplacent planches et Brillantes) : `store/cartes-evolutions.md` — 3 cartes par personnage
   (forme 1 argent = base, forme 2 violet = Éveillé, forme 3 or full art = Divin) ; fusions sans évolution ;
-  dragon : la carte existante = forme 3 (Dragonnet → Dragon de Givre → Dragon de Givre Arcanique).
+  dragon : la carte existante = forme 1 (→ Dragon des Glaces Ancien → Dragon Arcanique Céleste).
+  Personnages évolués en combat : `store/personnages-evolutions.md` → `art/<id>_2.webp` (Éveillé) et `art/<id>_3.webp` (Divin),
+  puis ajouter l'id à `EVART` dans la source (`picKey()` choisit l'image ; repli sur l'image de base).
   Anciennes planches de 4 : `store/cartes-planches.md` ; découper au cadre puis normaliser à 988×1500 sur fond 1024×1536 (zones identiques).
   Polices dans `tools/fonts/` (Grenze Gotisch, Barlow Semi Condensed, licence OFL).
 
