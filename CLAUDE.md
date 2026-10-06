@@ -9,14 +9,15 @@ avec des personnages illustrés générés sur ChatGPT. Réponds en français, s
 
 ## Fichiers
 - `index.html` : le jeu complet (HTML/CSS/JS dans un seul fichier, canvas 2D), version installable (manifest, icônes).
-- `sources/jeu-version-claude.html` : même jeu sans `<head>` — c'est ce fichier qu'on publie comme artifact.
-  Toute modification du jeu doit être faite dans les DEUX fichiers (ou régénérer `index.html` à partir de celui-ci
-  en ajoutant l'en-tête PWA présent en haut de `index.html`).
+- `sources/jeu-version-claude.html` : LA SOURCE du jeu (sans `<head>`), c'est elle qu'on modifie et qu'on publie comme artifact.
+  Après chaque modification : `python3 tools/build.py` régénère `index.html` (ajoute l'en-tête PWA de `tools/entete-pwa.html`).
 - `art/` : images du jeu détourées en WebP (personnages, arènes `arena*.webp`, tours, portraits `foe1-8`, avatars `av1-8`, pièce `coin*`, packs `pack1-5`).
 - `sources/images-originales/` : images ChatGPT d'origine (JPG haute qualité).
 - `sources/prompts-personnages.md` : prompts utilisés.
 
 ## Ce qui existe dans le jeu
+Écran de chargement, accueil « citadelle » façon jeu de village (HUD niveau/ressources, gros boutons COMBAT/BOUTIQUE,
+château qui produit de l'or hors ligne, bulle à récolter), recherche d'adversaire + écran VS.
 Combat temps réel (3 tours/camp, élixir, deck de 8), 26 personnages avec attaque + pouvoir ultime,
 4 fusions, 6 arènes, niveau joueur, trophées, Éveil (3 évolutions), monnaie premium « Invok »,
 boutique (personnages, coffres, packs, effets d'invocation, bonus), coffre du jour, 3 quêtes/jour,

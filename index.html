@@ -69,6 +69,83 @@ button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line
 .offer button{padding:9px 10px;font-size:13px;white-space:nowrap}
 .offer.iap{border-style:dashed}
 .gem{color:#e3c8ff}
+/* ---- écran de chargement ---- */
+#boot{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 24px calc(48px + env(safe-area-inset-bottom,0px));background:#120e1c;overflow:hidden;transition:opacity .5s}
+#boot.out{opacity:0;pointer-events:none}
+#boot .bg{position:absolute;inset:-20px;background:url(art/arena.webp) center 60%/cover;filter:blur(3px) brightness(.45);transform:scale(1.08);animation:bootzoom 12s ease-in-out infinite alternate}
+@keyframes bootzoom{to{transform:scale(1.18)}}
+#boot .logo-b{position:absolute;top:22%;left:0;right:0;text-align:center}
+#boot .logo-b img{width:120px;height:120px;filter:drop-shadow(0 0 24px #b06cffaa);animation:coinspin 3.2s ease-in-out infinite}
+@keyframes coinspin{50%{transform:translateY(-8px) rotateY(25deg)}}
+#boot h1{font-family:var(--display);font-weight:800;font-size:44px;line-height:.95;margin:10px 0 0;color:#ffe9a8;text-shadow:0 3px 0 #6b4a10,0 0 26px #e8b94a88;letter-spacing:.5px}
+#boot .sub{color:#d9c8ff;font-weight:700;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-top:8px}
+#boot .tip{position:relative;color:#e8def8;font-size:14px;text-align:center;min-height:2.6em;margin-bottom:14px;max-width:340px}
+#boot .pbar{position:relative;width:100%;max-width:340px;height:16px;border-radius:9px;background:#0009;border:2px solid #000;box-shadow:0 0 0 2px #e8b94a55;overflow:hidden}
+#boot .pbar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(180deg,#ffe28a,#e8a32a);transition:width .25s}
+#boot .tap{position:relative;font-family:var(--display);font-size:26px;color:#fff;text-shadow:0 2px 0 #000;margin-top:18px;animation:tapb 1.2s ease-in-out infinite;visibility:hidden}
+#boot.ready .tap{visibility:visible}
+@keyframes tapb{50%{opacity:.35;transform:scale(.96)}}
+/* ---- citadelle (accueil) ---- */
+body.home #top,body.home #nav{display:none}
+.vil{position:fixed;inset:0;max-width:480px;margin:0 auto;overflow:hidden;background:#120e1c;z-index:2;user-select:none}
+.vil-bg{position:absolute;max-width:none}
+.bld{position:absolute;transform:translate(-50%,-80%);cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}
+.bld:active{transform:translate(-50%,-80%) scale(.95)}
+.bld img{display:block;width:100%;filter:drop-shadow(0 6px 6px #0008)}
+.bld .tag{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);white-space:nowrap;font-weight:800;font-size:11px;color:#fff;background:#000a;border:1px solid #fff3;border-radius:6px;padding:1px 6px;text-shadow:0 1px 0 #000}
+.bubble{position:absolute;left:50%;top:6%;transform:translate(-50%,-100%);display:flex;align-items:center;gap:4px;background:radial-gradient(circle at 50% 30%,#fff,#e8e2f5);color:#3a2a10;font-weight:900;font-size:13px;border-radius:99px;padding:4px 9px 4px 4px;box-shadow:0 3px 0 #0006,0 0 0 2px #e8b94a;animation:bob 1.4s ease-in-out infinite;z-index:3}
+.bubble img{width:22px;height:22px}
+.bubble.full{box-shadow:0 3px 0 #0006,0 0 0 3px #46c27a,0 0 16px #46c27a}
+@keyframes bob{50%{transform:translate(-50%,-112%)}}
+.hud-tl{position:absolute;z-index:5;top:calc(8px + env(safe-area-inset-top,0px));left:8px;display:flex;gap:8px;align-items:center;max-width:56%}
+.lvb{position:relative;flex:none;width:48px;height:48px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 0 #123;background:radial-gradient(circle at 40% 30%,#7cc0ff,#1d5fd0 70%);clip-path:polygon(50% 0,61% 33%,98% 35%,68% 57%,79% 92%,50% 72%,21% 92%,32% 57%,2% 35%,39% 33%);filter:drop-shadow(0 2px 0 #000)}
+.pl{min-width:0}
+.pl b{display:block;color:#fff;font-weight:800;font-size:15px;text-shadow:0 2px 0 #000,0 0 4px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xpb{height:9px;width:110px;max-width:100%;background:#000a;border:1.5px solid #000;border-radius:5px;overflow:hidden;margin:2px 0}
+.xpb i{display:block;height:100%;background:linear-gradient(#a8e3ff,#3d9dff)}
+.trp{display:inline-flex;align-items:center;gap:3px;color:#ffe28a;font-weight:900;font-size:13px;text-shadow:0 2px 0 #000}
+.hud-tr{position:absolute;z-index:5;top:calc(8px + env(safe-area-inset-top,0px));right:8px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.rbar{position:relative;display:flex;align-items:center;width:128px;height:26px;background:#000b;border:2px solid #000;border-radius:7px;box-shadow:inset 0 0 0 1px #fff2}
+.rbar i{position:absolute;inset:2px auto 2px 2px;border-radius:4px;opacity:.85}
+.rbar.gold i{background:linear-gradient(#ffe28a,#d79a1c)}
+.rbar.inv i{background:linear-gradient(#e2b8ff,#8a3fd8)}
+.rbar .v{position:relative;flex:1;text-align:right;padding-right:30px;color:#fff;font-weight:900;font-size:14px;text-shadow:0 2px 0 #000;font-variant-numeric:tabular-nums}
+.rbar .ico{position:absolute;right:-10px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;font-size:24px;filter:drop-shadow(0 2px 0 #000)}
+.rbar .ico img{width:34px;height:34px}
+.rbar .plus{position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:22px;height:22px;padding:0;border-radius:6px;background:linear-gradient(#8fe36a,#3a9a2a);color:#fff;font-size:18px;line-height:20px;font-weight:900;border:2px solid #000;text-shadow:0 1px 0 #000}
+.rcap{font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 0 #000;margin-top:-4px}
+.side{position:absolute;z-index:5;display:flex;flex-direction:column;gap:12px}
+.side.l{left:8px;top:calc(96px + env(safe-area-inset-top,0px))}.side.r{right:8px;top:calc(96px + env(safe-area-inset-top,0px))}
+.rb{position:relative;width:54px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;padding:0;color:#fff;font-size:10px;font-weight:800;text-shadow:0 1px 0 #000,0 0 3px #000}
+.rb .c{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(#4b3c7a,#251a45);border:2px solid #000;box-shadow:inset 0 2px 0 #ffffff33,0 3px 0 #000a}
+.rb .c img{width:34px;height:34px;object-fit:cover;border-radius:50%}
+.rb .dot{position:absolute;top:-4px;right:0;width:16px;height:16px;border-radius:50%;background:#e5484d;border:2px solid #000;color:#fff;font-size:10px;line-height:12px}
+.bigb{position:absolute;z-index:5;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:0;background:none;padding:0;color:#fff;font-family:var(--display);font-weight:800;font-size:19px;text-shadow:0 2px 0 #000,0 0 4px #000}
+.bigb .c{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:44px;border:3px solid #000;box-shadow:inset 0 4px 0 #ffffff55,inset 0 -6px 0 #0004,0 5px 0 #000a}
+.bigb.atk{left:12px}.bigb.atk .c{background:radial-gradient(circle at 50% 35%,#ffcf5a,#e07b14 70%)}
+.bigb.shp{right:12px}.bigb.shp .c{background:radial-gradient(circle at 50% 35%,#c99bff,#6b2fc0 70%)}
+.bigb .c img{width:58px;height:58px}
+.bigb small{font-family:var(--body);font-size:11px;font-weight:800;margin-top:-2px}
+.bigb:active .c{transform:translateY(3px);box-shadow:inset 0 4px 0 #ffffff55,inset 0 -6px 0 #0004,0 2px 0 #000a}
+.flycoin{position:fixed;z-index:70;width:26px;height:26px;pointer-events:none;transition:transform .7s cubic-bezier(.5,-.3,.7,1),opacity .7s}
+/* ---- recherche d'adversaire + VS ---- */
+#mm{position:fixed;inset:0;z-index:55;overflow:hidden;background:linear-gradient(#5b8fd6,#c9dcf5);display:flex;align-items:center;justify-content:center;flex-direction:column}
+#mm .cl{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 40%,#ffffff00 70%);animation:cloud 1.6s linear infinite}
+@keyframes cloud{from{transform:translateX(120vw)}to{transform:translateX(-140vw)}}
+#mm .msg{position:relative;font-family:var(--display);font-size:30px;color:#fff;text-shadow:0 3px 0 #23407a;text-align:center}
+#mm .msg small{display:block;font-family:var(--body);font-size:14px;font-weight:700;color:#23407a;text-shadow:none;margin-top:6px}
+#mm.vs{background:radial-gradient(circle at 50% 50%,#3b2d5e,#0b0814 75%)}
+.vsrow{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;width:100%;max-width:440px;padding:0 12px;box-sizing:border-box}
+.vsp{text-align:center;min-width:0;animation:vsin .45s cubic-bezier(.2,1.4,.4,1) both}
+.vsp.r{animation-name:vsinr}
+@keyframes vsin{from{transform:translateX(-120%)}}@keyframes vsinr{from{transform:translateX(120%)}}
+.vsp img{width:118px;height:118px;border-radius:50%;object-fit:cover;border:4px solid #3d8bfd;box-shadow:0 0 30px #3d8bfd88}
+.vsp.r img{border-color:#e5484d;box-shadow:0 0 30px #e5484d88}
+.vsp b{display:block;color:#fff;font-size:16px;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vsp span{color:var(--muted);font-size:12px}
+.vsx{font-family:var(--display);font-size:56px;color:#ffe28a;text-shadow:0 4px 0 #6b4a10,0 0 24px #e8b94a;animation:vsx .5s .3s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes vsx{from{transform:scale(3);opacity:0}}
+.vsarena{position:relative;margin-top:28px;color:#d9c8ff;font-weight:800;letter-spacing:.15em;text-transform:uppercase;font-size:12px;text-align:center}
 nav button{position:relative}
 nav .dot{position:absolute;top:4px;right:calc(50% - 18px);width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--table)}
 .sp-head{border-radius:16px;padding:16px;background:linear-gradient(135deg,#3b2d5e,#1d1630 60%,#4a3410);border:1px solid var(--gold-dim)}
@@ -240,7 +317,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
     </section>
   </main>
   <nav id="nav">
-    <button data-go="home" class="on"><span>⚔️</span>Combat</button>
+    <button data-go="home" class="on"><span>🏰</span>Village</button>
     <button data-go="deck"><span>🎴</span>Deck</button>
     <button data-go="shop"><span><img src="art/coin_flat.webp" alt="" style="width:22px;height:22px;vertical-align:middle"></span>Boutique</button>
     <button data-go="season"><span>📖</span>Saison</button>
@@ -248,6 +325,10 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
   </nav>
 </div>
 <div id="ov" class="ov" hidden></div>
+<div id="mm" hidden></div>
+<div id="boot"><div class="bg"></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes</div></div>
+  <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
 /* ---------- Données ---------- */
@@ -405,7 +486,7 @@ function migrate(s){
   s.deck=s.deck&&s.deck.length===8?s.deck:[...STARTER];
   s.fus=s.fus||{};s.avatar=s.avatar||'🧑‍🦱';s.name=s.name||'Vous';
   s.best=Math.max(s.best||0,s.tro);s.played=s.played||s.wins||0;
-  s.gems=s.gems??60;s.pass=s.pass||{xp:0,prem:false,f:{},p:{}};s.circ=s.circ||'base';s.circs=s.circs||{base:1};s.xpB=s.xpB||0;s.goldB=s.goldB||0;s.xp=s.xp||0;s.plv=s.plv||1;s.map=s.map||'academie';s.maps=s.maps||{academie:1};
+  s.gems=s.gems??60;s.mine=s.mine||Date.now()-36e5*2;s.pass=s.pass||{xp:0,prem:false,f:{},p:{}};s.circ=s.circ||'base';s.circs=s.circs||{base:1};s.xpB=s.xpB||0;s.goldB=s.goldB||0;s.xp=s.xp||0;s.plv=s.plv||1;s.map=s.map||'academie';s.maps=s.maps||{academie:1};
   return s;
 }
 const owned=id=>!!S.cards[id];
@@ -438,6 +519,7 @@ function go(s){
   $('#s-home').hidden=s!=='home';$('#s-deck').hidden=s!=='deck';$('#s-prof').hidden=s!=='prof';$('#s-shop').hidden=s!=='shop';$('#s-season').hidden=s!=='season';if(s==='season')renderSeason();$('#s-battle').hidden=s!=='battle';
   if(s==='shop')renderShop();
   if(s==='prof')renderProf();
+  document.body.classList.toggle('home',s==='home');
   $('#nav').hidden=s==='battle';$('#top').hidden=s==='battle';
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===s));
   if(s==='home')renderHome();if(s==='deck')renderDeck();
@@ -446,26 +528,103 @@ function go(s){
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.go)});
 
 /* ---------- Accueil ---------- */
+/* ---------- Citadelle (accueil) ---------- */
+const mineRate=()=>40+S.plv*12;                 // or produit par heure
+const mineCap=()=>mineRate()*8;                 // capacité : 8 heures
+const mineStock=()=>Math.min(mineCap(),Math.floor((Date.now()-S.mine)/36e5*mineRate()));
 function renderHome(){
-  const a=arenaOf(S.tro),can=S.daily!==today();
-  const pct=a.next?(S.tro-ARENAS[a.i][0])/(a.next[0]-ARENAS[a.i][0])*100:100;
-  $('#s-home').innerHTML=`
-   <div class="arena"><div class="label">Ligue ${a.i+1}</div><strong>${a.name}</strong>
-     <div class="troph"><div class="prog"><i style="width:${pct}%"></i></div>
-     <div class="note" style="margin-top:4px">${a.next?`🏆 ${S.tro} / ${a.next[0]} pour ${a.next[1]}`:'Ligue maximale atteinte'}</div></div></div>
-   <div class="versus">
-     <div class="duelist"><div class="av">${avPic(S.avatar,'me')}</div><b>${esc(S.name)}</b><div class="lvl"><b>Niv. ${S.plv}</b><span class="prog"><i style="width:${Math.min(100,S.xp/xpNeed(S.plv)*100)}%"></i></span></div></div>
-     <div class="vs">VS</div>
-     <div class="duelist"><div class="av">${foePic(foe)}</div><b>${foe[0]}</b><span class="note">Niv. ${enemyLv()}</span></div>
-   </div>
-   <button class="play" id="play">Combattre</button>
-   <button class="mapbtn" id="mapbtn"><img src="${mapImg(mapOf(S.map))}" alt="" style="filter:hue-rotate(${MAPART[S.map]?0:mapOf(S.map).hue}deg)"><span>${mapOf(S.map).n}<small>Changer d'arène · ${MAPS.filter(m=>S.maps[m.id]).length}/${MAPS.length} débloquées</small></span>›</button>
-   <button class="daily" id="daily" ${can?'':'disabled'}><span>🎁 Coffre du jour<br><small class="note">Série : ${S.streak} jour${S.streak>1?'s':''} · grimpe jusqu'au 7ᵉ jour</small></span><em>${can?'+'+dailyReward()+' 🪙':'Demain'}</em></button>`;
-  $('#play').onclick=startBattle;
-  $('#mapbtn').onclick=showMaps;
-  $('#s-home').insertAdjacentHTML('beforeend',installTip());
-  $('#daily').onclick=claimDaily;
+  document.body.classList.add('home');
+  const a=arenaOf(S.tro),m=mapOf(S.map),can=S.daily!==today(),st=mineStock();
+  const sOk=(()=>{try{return seasonClaimable()}catch(e){return false}})();
+  $('#s-home').innerHTML=`<div class="vil" id="vil">
+    <img class="vil-bg" id="vilbg" src="${mapImg(m)}" alt="">
+    <div class="bld" id="b-king" data-b="king"><img src="art/roi_p.webp" alt=""><span class="tag">Château · niv. ${S.plv}</span>
+      ${st>=1?`<div class="bubble ${st>=mineCap()?'full':''}" id="bub"><img src="art/coin_flat.webp" alt="" style="filter:sepia(1) saturate(3) hue-rotate(5deg)">+${st}</div>`:''}</div>
+    <div class="bld" id="b-l" data-b="deck"><img src="art/tour_p.webp" alt=""><span class="tag">Cartes</span></div>
+    <div class="bld" id="b-r" data-b="season"><img src="art/tour_p.webp" alt=""><span class="tag">Grimoire</span></div>
+    <div class="hud-tl" data-b="prof"><div class="lvb">${S.plv}</div><div class="pl"><b>${esc(S.name)}</b><div class="xpb"><i style="width:${Math.min(100,S.xp/xpNeed(S.plv)*100)}%"></i></div><span class="trp">🏆 ${S.tro}</span></div></div>
+    <div class="hud-tr">
+      <div class="rbar gold"><i style="width:calc(${Math.min(100,S.gold/Math.max(1000,mineCap()*4)*100)}% - 4px)"></i><span class="v" id="vgold">${S.gold}</span><span class="ico">🪙</span></div>
+      <div class="rbar inv"><button class="plus" data-b="shop">+</button><i style="width:calc(${Math.min(100,S.gems/1000*100)}% - 4px)"></i><span class="v" id="vgems">${S.gems}</span><span class="ico"><img src="art/coin_flat.webp" alt="Invoks"></span></div>
+    </div>
+    <div class="side l">
+      <button class="rb" data-b="daily"><span class="c">🎁</span>Coffre${can?'<span class="dot">!</span>':''}</button>
+      <button class="rb" data-b="season"><span class="c">📖</span>Saison${sOk?'<span class="dot">!</span>':''}</button>
+      <button class="rb" data-b="prof"><span class="c">${avPic(S.avatar)}</span>Profil</button>
+    </div>
+    <div class="side r">
+      <button class="rb" data-b="deck"><span class="c">🎴</span>Deck</button>
+      <button class="rb" data-b="maps"><span class="c"><img src="${mapImg(m)}" alt="" style="border-radius:8px"></span>Arène</button>
+      ${isStandalone()?'':`<button class="rb" data-b="fs"><span class="c">📲</span>Plein écran</button>`}
+    </div>
+    <button class="bigb atk" data-b="fight"><span class="c">⚔️</span>COMBAT<small>${m.n}</small></button>
+    <button class="bigb shp" data-b="shop"><span class="c"><img src="art/pack3.webp" alt=""></span>BOUTIQUE</button>
+  </div>`;
+  layoutVillage();
 }
+function layoutVillage(){
+  const v=$('#vil');if(!v)return;const r=v.getBoundingClientRect(),cw=r.width,ch=r.height;
+  // on cadre la moitié basse de l'arène : ta citadelle
+  const sc=Math.max(cw/941,ch/1250),iw=941*sc,ih=1672*sc,ox=(cw-iw)/2,oy=Math.min(0,ch-ih+ch*.03);
+  const bg=$('#vilbg');Object.assign(bg.style,{left:ox+'px',top:oy+'px',width:iw+'px',height:ih+'px'});
+  const put=(id,x,y,w)=>{const el=$('#'+id);if(!el)return;Object.assign(el.style,{left:(ox+x*sc)+'px',top:(oy+y*sc)+'px',width:(w*sc)+'px'})};
+  put('b-king',470,1365,254);put('b-l',185,1155,188);put('b-r',760,1155,188);
+}
+addEventListener('resize',()=>{if(!$('#s-home').hidden)layoutVillage()});
+function collectMine(){
+  const st=mineStock();if(st<1)return;
+  S.gold+=st;S.mine=Date.now();persist();
+  const from=$('#bub').getBoundingClientRect(),to=$('#vgold').getBoundingClientRect();
+  for(let i=0;i<8;i++){const c=document.createElement('img');c.src='art/coin_flat.webp';c.className='flycoin';c.style.filter='sepia(1) saturate(3) hue-rotate(5deg)';
+    c.style.left=(from.left+from.width/2-13+(Math.random()-.5)*30)+'px';c.style.top=(from.top+(Math.random()-.5)*20)+'px';document.body.appendChild(c);
+    setTimeout(()=>{c.style.transform=`translate(${to.right-from.left-from.width/2-10}px,${to.top-from.top}px) scale(.7)`;c.style.opacity='.2'},30+i*45);
+    setTimeout(()=>c.remove(),900+i*45)}
+  setTimeout(()=>{renderHome();setTop()},700);
+}
+$('#s-home').addEventListener('click',e=>{
+  const t=e.target.closest('[data-b]');if(!t)return;const b=t.dataset.b;
+  if(e.target.closest('#bub')){collectMine();return}
+  if(b==='fight')findMatch();
+  else if(b==='shop'||b==='deck'||b==='season'||b==='prof')go(b);
+  else if(b==='maps')showMaps();
+  else if(b==='daily'){if(S.daily===today())modal(`<h3>Coffre du jour</h3><p class="note">Déjà ouvert aujourd'hui. Reviens demain : ta série est de ${S.streak} jour${S.streak>1?'s':''}.</p><div class="btns"><button data-close>OK</button></div>`);else claimDaily()}
+  else if(b==='fs'){if(canFS()&&!isIOS())goFS();else modal(`<h3>Plein écran</h3>${installTip()}<div class="btns"><button data-close>Compris</button></div>`)}
+  else if(b==='king'){const st=mineStock();modal(`<h3>Château</h3><p class="note">Ton château produit <b>${mineRate()} 🪙 par heure</b>, même quand tu ne joues pas (jusqu'à ${mineCap()} 🪙, soit 8 heures). Monte de niveau pour produire plus.</p><div class="big">${st} / ${mineCap()} 🪙</div><div class="btns">${st>=1?'<button id="col">Récolter</button>':''}<button class="ghost" data-close>Fermer</button></div>`,bx=>{const c=bx.querySelector('#col');if(c)c.onclick=()=>{closeModal();collectMine()}})}
+});
+setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=$('#bub'),st=mineStock();if((!b&&st>=1)||(b&&!b.textContent.includes('+'+st)))renderHome()}catch(e){}},15000);
+
+/* ---------- Recherche d'adversaire puis VS ---------- */
+function findMatch(){
+  goFS();
+  const mm=$('#mm');mm.className='';mm.hidden=false;
+  mm.innerHTML=Array.from({length:9},(_,i)=>`<div class="cl" style="width:${180+i*37%160}px;height:${120+i*29%90}px;top:${(i*11)%90}%;animation-duration:${1.1+(i%4)*.35}s;animation-delay:-${i*.27}s"></div>`).join('')
+    +`<div class="msg">Recherche d'un adversaire…<small>${mapOf(S.map).n}</small></div>`;
+  setTimeout(()=>{
+    mm.className='vs';
+    mm.innerHTML=`<div class="vsrow"><div class="vsp">${avPic(S.avatar)}<b>${esc(S.name)}</b><span>Niveau ${S.plv} · 🏆 ${S.tro}</span></div>
+      <div class="vsx">VS</div><div class="vsp r">${foePic(foe)}<b>${esc(foe[0])}</b><span>Cartes niv. ${enemyLv()}</span></div></div>
+      <div class="vsarena">${mapOf(S.map).n}</div>`;
+    setTimeout(()=>{mm.hidden=true;mm.innerHTML='';startBattle()},1700);
+  },1500);
+}
+
+/* ---------- Écran de chargement ---------- */
+const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
+ 'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
+ 'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];
+function boot(){
+  const el=$('#boot');if(!el)return;let k=0,ti=Math.floor(Math.random()*TIPS.length);
+  $('#boottip').textContent='💡 '+TIPS[ti];
+  const tipT=setInterval(()=>{ti=(ti+1)%TIPS.length;$('#boottip').textContent='💡 '+TIPS[ti]},2600);
+  const t0=Date.now(),tick=setInterval(()=>{
+    const loaded=Object.keys(PIC).length/ART.length,time=(Date.now()-t0)/1800;
+    k=Math.min(1,Math.min(time,.15+loaded*.85)+(Date.now()-t0>6000?1:0));
+    $('#bootbar').style.width=(k*100)+'%';
+    if(k>=1){clearInterval(tick);el.classList.add('ready')}
+  },80);
+  el.addEventListener('click',()=>{if(!el.classList.contains('ready'))return;clearInterval(tipT);goFS();el.classList.add('out');setTimeout(()=>el.remove(),550);layoutVillage()});
+}
+
 const avgLv=()=>S.deck.reduce((s,id)=>s+S.cards[id].lv,0)/S.deck.length;
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const enemyLv=()=>clamp(1+Math.floor(S.tro/200),1,MAXLV);
@@ -1281,7 +1440,7 @@ function endBattle(){
       const x=box.querySelector('#x2');if(x)x.onclick=()=>fakeAd(()=>{S.gold+=gold*2;finish()});
     });
 }
-function finish(){document.body.classList.remove('battle');persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
+function finish(){document.body.classList.remove('battle');foe=rnd(FOES);persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
 function fakeAd(done){
   let t=3;
   const tick=()=>{
@@ -1304,6 +1463,7 @@ function start(data){
   try{document.addEventListener('fullscreenchange',()=>setTimeout(()=>{try{resize()}catch(e){}},100))}catch(e){}
   try{window.claude?.hot?.snapshot?.(()=>({S}))}catch(e){}
   go('home');
+  try{boot()}catch(e){const b=document.getElementById('boot');if(b)b.remove()}
 }
 const hot=window.claude?.hot;
 hot?.ready?hot.ready(start):start(hot?.data??{});
