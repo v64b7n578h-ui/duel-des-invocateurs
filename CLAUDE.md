@@ -18,6 +18,8 @@ avec des personnages illustrés générés sur ChatGPT. Réponds en français, s
 ## Ce qui existe dans le jeu
 Écran de chargement, accueil « citadelle » façon jeu de village (HUD niveau/ressources, gros boutons COMBAT/BOUTIQUE,
 château qui produit de l'or hors ligne, bulle à récolter), recherche d'adversaire + écran VS.
+Nouveau joueur : 6 cartes de base (`STARTER`) + choix de 2 héros parmi `HEROES`, puis visite guidée (`TUT`) ; guide des règles (`HELP`, bouton Aide).
+Tous les autres personnages : table `NEWREQ` (gratuit au niveau de joueur `lv` ou tout de suite pour `gems` Invoks). Les coffres ne donnent que des copies.
 Combat temps réel (3 tours/camp, élixir, deck de 8), 26 personnages avec attaque + pouvoir ultime,
 4 fusions, 6 arènes, niveau joueur, trophées, Éveil (3 évolutions), monnaie premium « Invok »,
 boutique (personnages, coffres, packs, effets d'invocation, bonus), coffre du jour, 3 quêtes/jour,

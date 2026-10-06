@@ -57,6 +57,14 @@ button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line
 .offer button{padding:9px 10px;font-size:13px;white-space:nowrap}
 .offer.iap{border-style:dashed}
 .gem{color:#e3c8ff}
+#tut{position:fixed;inset:0;z-index:66;cursor:pointer}
+.tut-dim{position:absolute;inset:0;background:#000b}
+.tut-hole{position:absolute;border-radius:16px;box-shadow:0 0 0 9999px #000b,0 0 0 3px var(--gold),0 0 22px var(--gold);animation:tutp 1.2s ease-in-out infinite}
+@keyframes tutp{50%{box-shadow:0 0 0 9999px #000b,0 0 0 5px var(--gold),0 0 30px var(--gold)}}
+.tut-b{position:absolute;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--table-2);border:2px solid var(--gold);border-radius:14px;padding:12px 14px;color:var(--ink)}
+.tut-b b{font-family:var(--display);font-size:22px;color:var(--gold)}
+.tut-b p{margin:4px 0 6px;line-height:1.4}
+.tut-b span{font-size:11px;color:var(--muted)}
 /* ---- écran de chargement ---- */
 #boot{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 24px calc(48px + env(safe-area-inset-bottom,0px));background:#120e1c;overflow:hidden;transition:opacity .5s}
 #boot.out{opacity:0;pointer-events:none}
@@ -345,7 +353,12 @@ const DEFS={
 };
 const IDS=Object.keys(DEFS);
 /* personnages à débloquer : au niveau indiqué, ou tout de suite en Éclats */
-const NEWREQ={sorciere:{lv:2,gems:100},assassin:{lv:3,gems:150},basilic:{lv:4,gems:180},valkyrie:{lv:5,gems:250},chaman:{lv:6,gems:280},blizzard:{lv:7,gems:300},lave:{lv:8,gems:350},gardien:{lv:10,gems:500}};
+/* Chaque personnage verrouillé : gratuit au niveau de joueur indiqué, ou tout de suite en Invoks */
+const NEWREQ={loups:{lv:2,gems:80},mage:{lv:2,gems:120},pretresse:{lv:3,gems:120},sorciere:{lv:3,gems:100},samourai:{lv:4,gems:150},assassin:{lv:4,gems:150},
+ golem:{lv:5,gems:180},basilic:{lv:5,gems:180},dragon:{lv:6,gems:250},valkyrie:{lv:6,gems:250},chaman:{lv:7,gems:280},phenix:{lv:7,gems:300},
+ blizzard:{lv:8,gems:300},lave:{lv:8,gems:350},foudre:{lv:9,gems:400},gardien:{lv:10,gems:500}};
+/* au début on choisit 2 héros parmi ces 4 */
+const HEROES=['mage','golem','pretresse','samourai'];
 /* arènes à choisir : gratuites au niveau indiqué, ou tout de suite en Éclats. hue = teinte provisoire tant que l'illustration n'existe pas */
 const MAPS=[
  {id:'academie',n:'Académie des Arcanes',lv:1,gems:0,art:'arena',hue:0,txt:'L\'arène des débuts, au-dessus des nuages'},
@@ -422,7 +435,7 @@ function seasonClaimable(){
 }
 function navDots(){const b=document.querySelector('#nav [data-go="season"]');if(!b)return;let d=b.querySelector('.dot');const on=seasonClaimable();if(on&&!d){d=document.createElement('i');d.className='dot';b.appendChild(d)}if(!on&&d)d.remove()}
 const xpNeed=lv=>100+lv*60;
-const STARTER=['chevalier','archere','gobelins','squelettes','mage','golem','dragon','boule'];
+const STARTER=['chevalier','archere','gobelins','squelettes','goule','boule']; // les 6 cartes de base, données à tous
 /* cartes qu'on peut trouver dans les coffres, selon l'arène */
 const UNLOCKS=[['loups','goule'],['pretresse','samourai'],['phenix'],['foudre']];
 /* fusions : invoquer A sur une troupe B (ou l'inverse) */
@@ -468,16 +481,16 @@ const lvMult=lv=>1+(lv-1)*.1;
 const upCost=lv=>({copies:lv*3,gold:lv*50});
 
 let S;
-function fresh(){const cards={};STARTER.forEach(id=>cards[id]={lv:1,n:0});return{gold:100,gems:60,xp:0,plv:1,map:'academie',maps:{academie:1},tro:0,wins:0,cards,daily:null,streak:0,tut:true}}
+function fresh(){const cards={};STARTER.forEach(id=>cards[id]={lv:1,n:0});return{needStarter:true,gold:100,gems:60,xp:0,plv:1,map:'academie',maps:{academie:1},tro:0,wins:0,cards,daily:null,streak:0,tut:true}}
 function migrate(s){
-  s.deck=s.deck&&s.deck.length===8?s.deck:[...STARTER];
+  s.deck=s.deck&&s.deck.length>=6?s.deck.filter(id=>s.cards[id]):[...STARTER];
   s.fus=s.fus||{};s.avatar=s.avatar||'🧑‍🦱';s.name=s.name||'Vous';
   s.best=Math.max(s.best||0,s.tro);s.played=s.played||s.wins||0;
   s.gems=s.gems??60;s.mine=s.mine||Date.now()-36e5*2;s.pass=s.pass||{xp:0,prem:false,f:{},p:{}};s.circ=s.circ||'base';s.circs=s.circs||{base:1};s.xpB=s.xpB||0;s.goldB=s.goldB||0;s.xp=s.xp||0;s.plv=s.plv||1;s.map=s.map||'academie';s.maps=s.maps||{academie:1};
   return s;
 }
 const owned=id=>!!S.cards[id];
-const pool=()=>{const a=arenaOf(S.best).i;return[...STARTER,...UNLOCKS.slice(0,a+1).flat()]};
+const pool=()=>IDS.filter(owned);
 function load(){try{const r=localStorage.getItem('invoc-cr');if(r)return JSON.parse(r)}catch(e){}return fresh()}
 function persist(){try{localStorage.setItem('invoc-cr',JSON.stringify(S))}catch(e){}}
 const $=s=>document.querySelector(s);
@@ -538,6 +551,7 @@ function renderHome(){
       <button class="rb" data-b="daily"><span class="c">🎁</span>Coffre${can?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="season"><span class="c">📖</span>Saison${sOk?'<span class="dot">!</span>':''}</button>
       <button class="rb" data-b="prof"><span class="c">${avPic(S.avatar)}</span>Profil</button>
+      <button class="rb" data-b="help"><span class="c">❓</span>Aide</button>
     </div>
     <div class="side r">
       <button class="rb" data-b="deck"><span class="c">🎴</span>Deck</button>
@@ -571,6 +585,8 @@ function collectMine(){
 $('#s-home').addEventListener('click',e=>{
   const t=e.target.closest('[data-b]');if(!t)return;const b=t.dataset.b;
   if(e.target.closest('#bub')){collectMine();return}
+  if(S.needStarter){chooseStarter();return}
+  if(b==='help'){showHelp(0);return}
   if(b==='fight')findMatch();
   else if(b==='shop'||b==='deck'||b==='season'||b==='prof')go(b);
   else if(b==='maps')showMaps();
@@ -579,6 +595,58 @@ $('#s-home').addEventListener('click',e=>{
   else if(b==='king'){const st=mineStock();modal(`<h3>Château</h3><p class="note">Ton château produit <b>${mineRate()} 🪙 par heure</b>, même quand tu ne joues pas (jusqu'à ${mineCap()} 🪙, soit 8 heures). Monte de niveau pour produire plus.</p><div class="big">${st} / ${mineCap()} 🪙</div><div class="btns">${st>=1?'<button id="col">Récolter</button>':''}<button class="ghost" data-close>Fermer</button></div>`,bx=>{const c=bx.querySelector('#col');if(c)c.onclick=()=>{closeModal();collectMine()}})}
 });
 setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=$('#bub'),st=mineStock();if((!b&&st>=1)||(b&&!b.textContent.includes('+'+st)))renderHome()}catch(e){}},15000);
+
+/* ---------- Choix des héros de départ ---------- */
+function chooseStarter(){
+  const sel=[];
+  const draw=()=>modal(`<h3>Choisis 2 héros</h3>
+    <p class="note">Tu commences avec 6 cartes de base. Choisis <b>2 héros</b> pour compléter ton deck. Les autres se débloqueront plus tard, gratuitement en montant de niveau ou avec des Invoks.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0">${HEROES.map(id=>`<div data-h="${id}" style="min-width:0;cursor:pointer;border-radius:12px;padding:4px;${sel.includes(id)?'box-shadow:0 0 0 3px var(--gold),0 0 18px var(--gold)':''}">${cardHTML(id)}<div class="note" style="margin-top:4px">${DEFS[id].txt}</div></div>`).join('')}</div>
+    <div class="btns"><button id="okh" ${sel.length===2?'':'disabled'}>${sel.length===2?'C\'est parti !':`Choisis encore ${2-sel.length}`}</button></div>`,
+    box=>{box.querySelectorAll('[data-h]').forEach(el=>el.onclick=()=>{const id=el.dataset.h;const i=sel.indexOf(id);if(i>=0)sel.splice(i,1);else if(sel.length<2)sel.push(id);draw()});
+      box.querySelector('#okh').onclick=()=>{if(sel.length!==2)return;sel.forEach(id=>S.cards[id]={lv:1,n:0});S.deck=[...STARTER,...sel];S.needStarter=false;persist();closeModal();renderHome();setTimeout(()=>tutorial(0),300)}});
+  draw();
+}
+
+/* ---------- Visite guidée du village ---------- */
+const TUT=[
+ {sel:null,t:'Bienvenue, Invocateur !',b:'Voici ta citadelle. Je te fais visiter en 30 secondes. Touche l\'écran pour continuer.'},
+ {sel:'.bigb.atk',t:'Combat',b:'Lance un duel en temps réel contre un autre mage. Détruis ses tours pour gagner des couronnes, de l\'or et de l\'XP.'},
+ {sel:'#b-king',t:'Ton château',b:'Il produit de l\'or toutes les heures, même quand tu ne joues pas. Touche la bulle de pièces pour récolter.'},
+ {sel:'.side.r [data-b="deck"]',t:'Ton deck',b:'Tes 8 cartes de combat. Ici tu les fais monter de niveau, tu les éveilles, et tu débloques de nouveaux personnages.'},
+ {sel:'.bigb.shp',t:'Boutique',b:'Achète des personnages, des coffres et des effets avec tes Invoks.'},
+ {sel:'.side.l [data-b="season"]',t:'Quêtes et saison',b:'3 quêtes chaque jour et 30 paliers de récompenses à gagner.'},
+ {sel:'.side.l [data-b="help"]',t:'Besoin d\'aide ?',b:'Toutes les règles sont expliquées ici, à tout moment. Bonne chance !'},
+];
+function tutorial(i){
+  let o=$('#tut');if(!o){o=document.createElement('div');o.id='tut';document.body.appendChild(o)}
+  if(i>=TUT.length){o.remove();S.tutV=1;persist();return}
+  const st=TUT[i],el=st.sel?document.querySelector(st.sel):null,r=el?el.getBoundingClientRect():null;
+  const hole=r?`<div class="tut-hole" style="left:${r.left-6}px;top:${r.top-6}px;width:${r.width+12}px;height:${r.height+12}px"></div>`:'<div class="tut-dim"></div>';
+  const below=!r||r.top<innerHeight/2;
+  o.innerHTML=hole+`<div class="tut-b" style="${r?(below?`top:${r.bottom+16}px`:`bottom:${innerHeight-r.top+16}px`):'top:38%'}"><b>${st.t}</b><p>${st.b}</p><span>${i+1}/${TUT.length} · touche pour continuer</span></div>`;
+  o.onclick=()=>tutorial(i+1);
+}
+
+/* ---------- Guide des règles ---------- */
+const HELP=[
+ {ic:'⚔️',t:'Le but du combat',b:'Chaque camp a 2 tours d\'archers et 1 château. Détruis une tour : 1 couronne. Détruis le château : 3 couronnes et victoire immédiate. Un combat dure 3 minutes, et l\'élixir va 2 fois plus vite pendant la dernière minute.'},
+ {ic:'💧',t:'Invoquer',b:'Touche une carte de ta main, puis la zone bleue de ton côté de l\'arène. Chaque carte coûte de l\'élixir (le chiffre rose). L\'élixir se recharge tout seul jusqu\'à 10. Les sorts se lancent n\'importe où.'},
+ {ic:'✨',t:'Pouvoirs ultimes',b:'Sous chaque personnage, un anneau doré se remplit à chaque attaque. Quand il est plein, son pouvoir ultime se déclenche tout seul : pluie d\'étoiles, séisme, ruée, souffle…'},
+ {ic:'🔀',t:'Les fusions',b:'Invoque une carte directement sur une de tes troupes compatibles : elles fusionnent en un monstre légendaire. Les 4 recettes sont dans l\'onglet Deck.'},
+ {ic:'🔓',t:'Débloquer des personnages',b:'Tu commences avec 6 cartes de base et 2 héros choisis. Chaque autre personnage se débloque GRATUITEMENT à un niveau de joueur, ou TOUT DE SUITE avec des Invoks (Deck ou Boutique).'},
+ {ic:'⬆️',t:'Faire évoluer',b:'Les coffres donnent des copies de tes cartes. Avec des copies et de l\'or, monte une carte de niveau (+10 %). Au niveau 3, 6 et 9, l\'Éveil la rend encore plus forte (+15 %) et change son aura.'},
+ {ic:'🪙',t:'Or et Invoks',b:'L\'or se gagne en combat, avec ton château et dans les coffres : il sert à faire évoluer tes cartes. Les Invoks (monnaie rare) se gagnent en montant de niveau, dans le coffre du jour et la saison : ils débloquent personnages, arènes et coffres.'},
+ {ic:'📅',t:'Chaque jour',b:'Ouvre le coffre du jour (la récompense monte pendant 7 jours), fais tes 3 quêtes, récolte ton château et avance dans le Grimoire de saison.'},
+];
+function showHelp(i=0){
+  const h=HELP[i];
+  modal(`<div style="font-size:48px">${h.ic}</div><h3 style="font-size:30px">${h.t}</h3><p style="text-align:left;line-height:1.5">${h.b}</p>
+   <div style="display:flex;justify-content:center;gap:6px;margin:10px 0">${HELP.map((_,k)=>`<i style="width:8px;height:8px;border-radius:50%;background:${k===i?'var(--gold)':'var(--line)'}"></i>`).join('')}</div>
+   <div class="btns" style="grid-template-columns:1fr 1fr">${i>0?'<button class="ghost" id="hp">‹ Précédent</button>':'<button class="ghost" data-close>Fermer</button>'}${i<HELP.length-1?'<button id="hn">Suivant ›</button>':'<button data-close>Compris !</button>'}</div>`,
+   box=>{const p=box.querySelector('#hp'),n=box.querySelector('#hn');if(p)p.onclick=()=>showHelp(i-1);if(n)n.onclick=()=>showHelp(i+1)});
+}
+function afterBoot(){if(S.needStarter)chooseStarter();else if(!S.tutV)tutorial(0)}
 
 /* ---------- Recherche d'adversaire puis VS ---------- */
 function findMatch(){
@@ -609,7 +677,7 @@ function boot(){
     $('#bootbar').style.width=(k*100)+'%';
     if(k>=1){clearInterval(tick);el.classList.add('ready')}
   },80);
-  el.addEventListener('click',()=>{if(!el.classList.contains('ready'))return;clearInterval(tipT);goFS();el.classList.add('out');setTimeout(()=>el.remove(),550);layoutVillage()});
+  el.addEventListener('click',()=>{if(!el.classList.contains('ready'))return;clearInterval(tipT);goFS();el.classList.add('out');setTimeout(()=>el.remove(),550);layoutVillage();setTimeout(afterBoot,650)});
 }
 
 const avgLv=()=>S.deck.reduce((s,id)=>s+S.cards[id].lv,0)/S.deck.length;
@@ -652,7 +720,7 @@ function addXP(x){
 }
 /* ---------- Boutique ---------- */
 const CHESTS=[
- {id:'or',n:'Coffre d\'or',ic:'🧰',n_:4,cost:{gold:250},txt:'4 cartes de votre collection'},
+ {id:'or',n:'Coffre d\'or',ic:'🧰',n_:4,cost:{gold:250},txt:'Des copies de 4 de tes cartes, pour les faire évoluer'},
  {id:'magie',n:'Coffre magique',ic:'🔮',n_:8,cost:{gems:60},min:'E',txt:'8 cartes, une Épique garantie'},
  {id:'legende',n:'Coffre légendaire',ic:'👑',n_:5,cost:{gems:220},min:'L',txt:'5 cartes, une Légendaire garantie'},
 ];
@@ -692,8 +760,6 @@ function openChest(c){
   if(c.free){}else if(c.cost.gold){if(S.gold<c.cost.gold)return;S.gold-=c.cost.gold}else{if(S.gems<c.cost.gems)return;S.gems-=c.cost.gems}
   const mine=IDS.filter(owned),loot=[];
   if(c.min){const R='CREL';const best=mine.filter(id=>R.indexOf(DEFS[id].r)>=R.indexOf(c.min));const id=rnd(best.length?best:mine);S.cards[id].n+=c.min==='L'?2:4;loot.push([id,c.min==='L'?2:4])}
-  const lockedPool=pool().filter(id=>!owned(id));
-  if(lockedPool.length&&Math.random()<.35){const id=rnd(lockedPool);S.cards[id]={lv:1,n:0};loot.push([id,0,true])}
   while(loot.length<c.n_){const id=rnd(mine),n=DEFS[id].r==='L'?1:DEFS[id].r==='E'?1+(Math.random()<.5|0):2+Math.floor(Math.random()*4);S.cards[id].n+=n;loot.push([id,n])}
   persist();setTop();if(!$('#s-shop').hidden)renderShop();if(!$('#s-season').hidden)renderSeason();
   modal(`<h3>${c.n}</h3><div class="reveal">${loot.map(([id,n,nw],i)=>`<div class="w" style="animation-delay:${i*.15}s">${cardHTML(id,{lv:S.cards[id].lv})}<span class="tag" ${nw?'style="color:var(--ok)"':''}>${nw?'NOUVELLE !':'+'+n}</span></div>`).join('')}</div><div class="btns"><button data-close>Continuer</button></div>`);
@@ -759,9 +825,10 @@ function upBtn(id){
     <button class="ghost" data-evo="${id}" style="padding:4px 2px;font-size:11px;border-radius:6px">${(o.evo||0)>=3?'✦ Divin':'✦ Éveil '+(o.evo||0)+'/3'}</button>`;
 }
 function renderDeck(){
-  const avg=(S.deck.reduce((s,id)=>s+DEFS[id].c,0)/8).toFixed(1);
-  const rest=IDS.filter(id=>!S.deck.includes(id));
-  $('#s-deck').innerHTML=`<h2>Votre deck</h2>
+  const avg=(S.deck.reduce((s,id)=>s+DEFS[id].c,0)/S.deck.length).toFixed(1);
+  const rest=[...IDS.filter(id=>owned(id)&&!S.deck.includes(id)),...IDS.filter(id=>!owned(id)).sort((a,b)=>(NEWREQ[a]?.lv||99)-(NEWREQ[b]?.lv||99))];
+  const nOwn=IDS.filter(owned).length;
+  $('#s-deck').innerHTML=`<h2>Votre deck</h2><p class="note" style="margin:-2px 0 8px">Collection : <b>${nOwn}/${IDS.length}</b> personnages. Les autres se débloquent en montant de niveau (gratuit) ou avec des Invoks.</p>
   <div class="deckbar"><span class="note">${pick?'Touchez une carte de la collection pour l’échanger.':'Touchez une carte du deck pour la remplacer.'}</span><span class="pill">💧 ${avg} moy.</span></div>
   <div class="deck">${S.deck.map(id=>`<div class="cell">${cardHTML(id,{lv:S.cards[id].lv,cls:pick===id?'picked':'',attr:`data-deck="${id}"`})}${upBtn(id)}</div>`).join('')}</div>
   <h4>Collection</h4>
@@ -775,7 +842,7 @@ function renderDeck(){
     <span class="res"><b>${ok?F.n:'Fusion inconnue'}</b><span class="note">${ok?F.txt:`${DEFS[F.mix[0]].n} + ${DEFS[F.mix[1]].n}`}</span></span></div>`}).join('')}</div>
   <div class="legend">${IDS.filter(owned).map(id=>`<div><b>${DEFS[id].e} ${DEFS[id].n}</b> : ${DEFS[id].txt}</div>`).join('')}</div>`;
 }
-function lockText(id){if(NEWREQ[id])return`Niv. ${NEWREQ[id].lv} ou ${CI} ${NEWREQ[id].gems}`;const a=UNLOCKS.findIndex(l=>l.includes(id));return`Coffres · ${ARENAS[a][1]}`}
+function lockText(id){const q=NEWREQ[id];return q?`Gratuit niv. ${q.lv} · ou ${CI} ${q.gems}`:''}
 $('#s-deck').addEventListener('click',e=>{
   const cb=e.target.closest('[data-cbuy]');if(cb){buyCard(cb.dataset.cbuy);return}
   const ev=e.target.closest('[data-evo]');if(ev){showEvo(ev.dataset.evo);return}
@@ -841,9 +908,9 @@ function installTip(){
 }
 function startBattle(){
   goFS();document.body.classList.add('battle');
-  const deck=shuffle([...S.deck]),adeck=shuffle([...STARTER,...UNLOCKS.slice(0,arenaOf(S.tro).i+1).flat(),...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/120)]).slice(0,8);G_map=mapOf(S.map);
+  const deck=shuffle([...S.deck]),adeck=shuffle([...new Set([...STARTER,...HEROES,...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/100)])]).slice(0,8);G_map=mapOf(S.map);
   G={banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
-     ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:0,eLv:enemyLv()};
+     ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:S.played?0:7,eLv:enemyLv()};
   G.ents.push(tower('p','king',CX,29.04),tower('p','princess',3.94,24.57),tower('p','princess',16.17,24.57),tower('e','king',CX,5.21),tower('e','princess',4.72,8.19),tower('e','princess',15.28,8.19));
   $('#ename').innerHTML=foePic(foe,'foeimg')+esc(foe[0]);
   $('#pname2').innerHTML=avPic(S.avatar,'meimg')+esc(S.name);$('#lvls').textContent=`Cartes adverses niv. ${G.eLv}`;
@@ -1403,8 +1470,6 @@ function endBattle(){
   if(win)S.wins++;
   const loot=[];
   if(win){
-    const locked=pool().filter(id=>!owned(id));
-    if(locked.length&&Math.random()<.3){const id=rnd(locked);S.cards[id]={lv:1,n:0};loot.push([id,0,true])}
     while(loot.length<4){const id=rnd(IDS.filter(owned)),n=DEFS[id].r==='L'?1:DEFS[id].r==='E'?1+(Math.random()<.5|0):2+Math.floor(Math.random()*3);S.cards[id].n+=n;loot.push([id,n])}
   }
   const xpMul=S.xpB>0?2:1;if(S.xpB>0)S.xpB--;
@@ -1450,7 +1515,7 @@ function start(data){
   try{document.addEventListener('fullscreenchange',()=>setTimeout(()=>{try{resize()}catch(e){}},100))}catch(e){}
   try{window.claude?.hot?.snapshot?.(()=>({S}))}catch(e){}
   go('home');
-  try{boot()}catch(e){const b=document.getElementById('boot');if(b)b.remove()}
+  try{boot()}catch(e){const b=document.getElementById('boot');if(b)b.remove();setTimeout(afterBoot,300)}
 }
 const hot=window.claude?.hot;
 hot?.ready?hot.ready(start):start(hot?.data??{});
