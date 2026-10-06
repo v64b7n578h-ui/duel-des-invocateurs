@@ -104,11 +104,12 @@ def render(cid, c, serie, total):
     fh, fb, lh = font(B8, 23), font(B5, 23), 27
     y = cy + 36
     maxx = x1 - pad
-    for is_ult, (titre, desc) in ((False, c['attaque']), (True, c['ultime'])):
+    lbl2 = 'Pouvoir ultime' if 'ultime' in c else 'Talent'
+    for is_ult, (titre, desc) in ((False, c['attaque']), (True, c.get('ultime') or c['talent'])):
         x = x0 + pad
         if is_ult:
             star(d, x + 8, y + 13, 9, '#ffd56b'); x += 22
-        head = ('Pouvoir ultime — ' if is_ult else '') + titre + ' : '
+        head = (lbl2 + ' — ' if is_ult else '') + titre + ' : '
         d.text((x, y), head, font=fh, fill='#ffd56b' if is_ult else '#ffffff'); x += fh.getlength(head)
         for w in desc.split():
             ww = fb.getlength(w + ' ')

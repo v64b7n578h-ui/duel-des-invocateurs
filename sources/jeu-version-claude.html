@@ -747,7 +747,7 @@ setInterval(()=>{try{if(G||$('#s-home').hidden||!$('#ov').hidden)return;const b=
 const RORD='CREL';
 const ALBUM=[...IDS.slice().sort((a,b)=>RORD.indexOf(DEFS[a].r)-RORD.indexOf(DEFS[b].r)||DEFS[a].c-DEFS[b].c),...FIDS];
 /* cartes dont l'illustration de collection existe (art/cartes/<id>.webp, faite avec tools/cartes.py) */
-const CARTES=['dragon'];
+const CARTES=['dragon','squelettes','gobelins','goule','chevalier'];
 const RNAME={C:'Commune',R:'Rare',E:'Épique',L:'Légendaire',F:'Arcane Secrète'};
 const RCOL={C:'#c9c6d6',R:'#6fb7ff',E:'#c77dff',L:'#ffd56b',F:'#ffe9a8'};
 const cRar=id=>FUS[id]?'F':DEFS[id].r;

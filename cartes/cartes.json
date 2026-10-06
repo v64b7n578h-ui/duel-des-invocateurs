@@ -43,6 +43,174 @@
           1518
         ]
       }
+    },
+    "squelettes": {
+      "num": 1,
+      "nom": "Squelettes Ensorcelés",
+      "cout": 1,
+      "rarete": "Commune",
+      "type": "Mort-vivant ×3",
+      "atk": 40,
+      "pv": 40,
+      "attaque": [
+        "Griffes maudites",
+        "frappent au corps à corps."
+      ],
+      "talent": [
+        "Horde",
+        "ils arrivent toujours à trois pour distraire l'ennemi."
+      ],
+      "zones": {
+        "medaillon": [
+          133,
+          152,
+          82
+        ],
+        "nom": [
+          255,
+          80,
+          915,
+          170
+        ],
+        "texte": [
+          58,
+          1172,
+          975,
+          1440
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
+    },
+    "gobelins": {
+      "num": 2,
+      "nom": "Gobelins Alchimistes",
+      "cout": 2,
+      "rarete": "Commune",
+      "type": "Gobelin ×3",
+      "atk": 50,
+      "pv": 90,
+      "attaque": [
+        "Potion acide",
+        "lancée à distance, elle éclabousse en zone."
+      ],
+      "talent": [
+        "Bande rapide",
+        "trois gobelins qui foncent sur l'ennemi."
+      ],
+      "zones": {
+        "medaillon": [
+          133,
+          152,
+          82
+        ],
+        "nom": [
+          255,
+          80,
+          915,
+          170
+        ],
+        "texte": [
+          58,
+          1172,
+          975,
+          1440
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
+    },
+    "goule": {
+      "num": 3,
+      "nom": "Goule Maudite",
+      "cout": 2,
+      "rarete": "Commune",
+      "type": "Mort-vivant",
+      "atk": 320,
+      "pv": 260,
+      "attaque": [
+        "Malédiction",
+        "fonce droit sur une tour ennemie."
+      ],
+      "talent": [
+        "Dernier souffle",
+        "elle explose et touche tout autour d'elle."
+      ],
+      "zones": {
+        "medaillon": [
+          133,
+          152,
+          82
+        ],
+        "nom": [
+          255,
+          80,
+          915,
+          170
+        ],
+        "texte": [
+          58,
+          1172,
+          975,
+          1440
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
+    },
+    "chevalier": {
+      "num": 4,
+      "nom": "Paladin des Runes",
+      "cout": 3,
+      "rarete": "Commune",
+      "type": "Guerrier",
+      "atk": 85,
+      "pv": 700,
+      "attaque": [
+        "Taillade runique",
+        "un arc de glace bleue au corps à corps."
+      ],
+      "ultime": [
+        "Jugement runique",
+        "une nova de runes frappe tout autour de lui."
+      ],
+      "zones": {
+        "medaillon": [
+          133,
+          152,
+          82
+        ],
+        "nom": [
+          255,
+          80,
+          915,
+          170
+        ],
+        "texte": [
+          58,
+          1172,
+          975,
+          1440
+        ],
+        "carte": [
+          18,
+          18,
+          1006,
+          1518
+        ]
+      }
     }
   }
 }
