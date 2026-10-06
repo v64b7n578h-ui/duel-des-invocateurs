@@ -4,7 +4,7 @@
 
 ⚠️ Les cartes en planche sont un peu moins nettes qu'une carte seule (environ 512 × 768 pixels chacune) : parfait pour le jeu et les réseaux. Pour l'impression des **Légendaires et Arcanes Secrètes**, on pourra refaire ces quelques cartes en grand, une par une.
 
-## Planche 1 — cartes 001, 002, 003, 004
+## Planche 1 — cartes 001, 002, 003, 004 ✅ déjà faite
 
 ```
 Planche de 4 cartes à collectionner pour mon jeu de fantasy « Duel des Invocateurs ».
@@ -25,6 +25,8 @@ Styles de rareté :
 - ÉPIQUE : cadre VIOLET et argent, fond holographique violet et bleu brillant, le personnage déborde un peu de sa fenêtre.
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
+
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
 
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
@@ -56,6 +58,8 @@ Styles de rareté :
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
 
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
+
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
 En haut à gauche : carte 005 · COMMUNE · Archère elfe aux cheveux argentés, tenue blanche et argent brodée de constellations, arc en croissant de lune.
@@ -85,6 +89,8 @@ Styles de rareté :
 - ÉPIQUE : cadre VIOLET et argent, fond holographique violet et bleu brillant, le personnage déborde un peu de sa fenêtre.
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
+
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
 
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
@@ -116,6 +122,8 @@ Styles de rareté :
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
 
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
+
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
 En haut à gauche : carte 013 · RARE · Archimage aux cheveux noirs et violets, robe violette et or, grimoire flottant aux pages lumineuses, sphères arcaniques.
@@ -145,6 +153,8 @@ Styles de rareté :
 - ÉPIQUE : cadre VIOLET et argent, fond holographique violet et bleu brillant, le personnage déborde un peu de sa fenêtre.
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
+
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
 
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
@@ -176,6 +186,8 @@ Styles de rareté :
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
 
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte (argent pour COMMUNE, bleu pour RARE, violet pour ÉPIQUE, or pour LÉGENDAIRE et ARCANE SECRÈTE).
+
 Les 4 cartes (en haut à gauche, en haut à droite, en bas à gauche, en bas à droite) :
 
 En haut à gauche : carte 022 · LÉGENDAIRE · Lance d'éclair doré et blanc qui descend d'un cercle magique céleste (objet, pas de personnage).
@@ -206,6 +218,8 @@ Styles de rareté :
 - LÉGENDAIRE : cadre OR, « full art » de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques et paillettes, le personnage sort du cadre.
 - ARCANE SECRÈTE : toute la carte en OR, le personnage comme une statue d'or gravée et brillante en relief, fond doré gravé de runes et d'étoiles.
 
+TRÈS IMPORTANT : respecte strictement la couleur du cadre indiquée pour la rareté de CHAQUE carte.
+
 Les 2 cartes (à gauche, à droite) :
 
 À gauche : carte 026 · ARCANE SECRÈTE · Shogun en armure de flammes rouge et or, ailes de phénix enflammées, katana de feu runique.
@@ -218,3 +232,39 @@ Les 2 cartes (à gauche, à droite) :
 - Une carte ratée : *« Garde la planche mais refais seulement la carte en bas à droite. »*
 
 Envoie-moi chaque planche en me disant son numéro : je découpe les 4 cartes, j'ajoute les textes et je les mets dans l'album du jeu.
+
+---
+
+# Éditions Brillantes — 2 cartes par image (rendu spectaculaire)
+
+Pour garder la qualité du Dragon, les Brillantes se font **par 2** (et non par 4). **Joins l'image de la carte du Dragon** à chaque fois.
+
+## Brillantes A — cartes 001 et 002
+
+```
+Planche de 2 cartes à collectionner ultra rares « Édition Brillante » pour mon jeu de fantasy « Duel des Invocateurs ».
+Image au format paysage 3:2. Les 2 cartes sont côte à côte, toutes deux au format portrait, EXACTEMENT de la même taille, bien droites, vues de face, bords arrondis, séparées par une bande NOIRE UNIE (#000000), avec du noir tout autour. Elles occupent toute la hauteur de l'image.
+
+Style IDENTIQUE à la carte du dragon jointe : cadre doré ornementé de runes avec un cristal violet en haut, médaillon rond VIDE en haut à gauche, bandeau VIDE en haut, grand encadré semi-transparent VIDE en bas. Effet « full art » : l'illustration occupe toute la carte de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques, reflets irisés et paillettes, le personnage sort légèrement du cadre (effet 3D).
+
+Style peinture numérique semi-réaliste et stylisée, comme une splash art de jeu MOBA haut de gamme, couleurs riches et saturées, éclairage dramatique, très détaillé.
+AUCUN texte, AUCUNE lettre, AUCUN chiffre, AUCUN logo. Design original.
+
+À gauche : Une horde de trois guerriers squelettes aux os noircis gravés de runes violettes lumineuses, yeux de flamme violette, épées spectrales levées, qui jaillissent d'une brume verte et violette dans un cimetière gothique sous la pleine lune.
+À droite : Gobelin alchimiste malicieux qui bondit vers l'avant, lunettes de cuivre, ceinture de fioles vert acide bouillonnantes, une potion explosive à la main qui éclate en gerbes vertes lumineuses, deux autres gobelins derrière lui.
+```
+
+## Brillantes B — cartes 003 et 004
+
+```
+Planche de 2 cartes à collectionner ultra rares « Édition Brillante » pour mon jeu de fantasy « Duel des Invocateurs ».
+Image au format paysage 3:2. Les 2 cartes sont côte à côte, toutes deux au format portrait, EXACTEMENT de la même taille, bien droites, vues de face, bords arrondis, séparées par une bande NOIRE UNIE (#000000), avec du noir tout autour. Elles occupent toute la hauteur de l'image.
+
+Style IDENTIQUE à la carte du dragon jointe : cadre doré ornementé de runes avec un cristal violet en haut, médaillon rond VIDE en haut à gauche, bandeau VIDE en haut, grand encadré semi-transparent VIDE en bas. Effet « full art » : l'illustration occupe toute la carte de bord à bord, fond holographique arc-en-ciel avec rayons prismatiques, reflets irisés et paillettes, le personnage sort légèrement du cadre (effet 3D).
+
+Style peinture numérique semi-réaliste et stylisée, comme une splash art de jeu MOBA haut de gamme, couleurs riches et saturées, éclairage dramatique, très détaillé.
+AUCUN texte, AUCUNE lettre, AUCUN chiffre, AUCUN logo. Design original.
+
+À gauche : Goule maudite bossue et terrifiante qui hurle, peau grise et verte, robe en lambeaux, chaînes et crânes, qui brandit un orbe d'énergie maudite verte et violette prêt à exploser, éclairs de malédiction tout autour.
+À droite : Paladin en armure d'argent gravée de runes bleu glacier lumineuses, grande cape bleu nuit qui flotte, qui brandit une épée runique entourée d'un tourbillon de glyphes de glace, cercle de runes lumineux à ses pieds.
+```
