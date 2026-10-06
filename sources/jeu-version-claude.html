@@ -335,7 +335,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.5</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.6</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -706,7 +706,7 @@ $('#s-home').addEventListener('click',e=>{
   if(e.target.closest('#bub')){collectMine();return}
   if(S.needStarter){chooseStarter();return}
   if(b==='help'){showHelp(0);return}
-  if(b==='fight')findMatch();
+  if(b==='fight')chooseMode();
   else if(b==='shop'||b==='deck'||b==='season'||b==='prof')go(b);
   else if(b==='maps')showMaps();
   else if(b==='daily'){if(S.daily===today())modal(`<h3>Coffre du jour</h3><p class="note">Déjà ouvert aujourd'hui. Reviens demain : ta série est de ${S.streak} jour${S.streak>1?'s':''}.</p><div class="btns"><button data-close>OK</button></div>`);else claimDaily()}
@@ -750,6 +750,7 @@ function tutorial(i){
 /* ---------- Guide des règles ---------- */
 const HELP=[
  {ic:'⚔️',t:'Le but du combat',b:'Chaque camp a 2 tours d\'archers et 1 château. Détruis une tour : 1 couronne. Détruis le château : 3 couronnes et victoire immédiate. Un combat dure 3 minutes, et l\'élixir va 2 fois plus vite pendant la dernière minute.'},
+ {ic:'🌐',t:'En ligne ou contre l\'ordi',b:'Touche COMBAT puis choisis : En ligne (un vrai joueur au hasard), Défier un ami (avec un code de 4 lettres), ou Contre l\'ordinateur (toujours disponible, même sans Internet).'},
  {ic:'💧',t:'Invoquer',b:'Touche une carte de ta main, puis la zone bleue de ton côté de l\'arène. Chaque carte coûte de l\'élixir (le chiffre rose). L\'élixir se recharge tout seul jusqu\'à 10. Les sorts se lancent n\'importe où.'},
  {ic:'✨',t:'Pouvoirs ultimes',b:'Sous chaque personnage, un anneau doré se remplit à chaque attaque. Quand il est plein, son pouvoir ultime se déclenche tout seul : pluie d\'étoiles, séisme, ruée, souffle…'},
  {ic:'🔀',t:'Les fusions',b:'Invoque une carte directement sur une de tes troupes compatibles : elles fusionnent en un monstre légendaire. Les 4 recettes sont dans l\'onglet Deck.'},
@@ -769,12 +770,191 @@ function showHelp(i=0){
 }
 function afterBoot(){if(S.needStarter)chooseStarter();else if(!S.tutV)tutorial(0)}
 
+/* ================= MODE EN LIGNE ================= */
+/* Connexion directe entre les deux téléphones (PeerJS / WebRTC). L'hôte fait tourner le combat et envoie l'état ;
+   l'invité affiche l'arène retournée et envoie seulement ses invocations. */
+const NET={conn:null,peer:null,role:null,foe:null,onmsg:null,last:0,timer:null,bc:null,
+  send(o){try{if(this.bc)this.bc.postMessage({k:'msg',to:this.other,from:this.me,d:o});else if(this.conn&&this.conn.open)this.conn.send(o)}catch(e){}}};
+const LOBBY='duelinvoc-lobby-v1',ROOM='duelinvoc-room-';
+const PEERCFG={debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}};
+function loadPeer(){return new Promise((res,rej)=>{if(window.Peer)return res();const add=src=>{const sc=document.createElement('script');sc.src=src;sc.onload=res;sc.onerror=()=>src.startsWith('vendor')?add('https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'):rej();document.head.appendChild(sc)};add('vendor/peerjs.min.js')})}
+const myCard=()=>({name:S.name,av:Math.max(0,avIdx(S.avatar)-1),tro:S.tro,plv:S.plv,map:S.map});
+
+/* --- miroir : l'arène est dessinée en perspective, on retourne en gardant les socles alignés --- */
+const MY=()=>[[RV1,RV0],[24.57,8.19],[29.04,5.21],[31.5,3]];   // y bas ↔ y haut
+const MS=()=>[[RV1,1],[24.57,10.56/12.23],[29.04,.8],[31.5,.78]];
+function lerpT(tab,y,a,b){for(let i=0;i<tab.length-1;i++){const p=tab[i],q=tab[i+1];if((y-p[a])*(y-q[a])<=0&&p[a]!==q[a])return p[b]+(q[b]-p[b])*(y-p[a])/(q[a]-p[a])}return y<Math.min(tab[0][a],tab.at(-1)[a])||y>Math.max(tab[0][a],tab.at(-1)[a])?tab[Math.abs(y-tab[0][a])<Math.abs(y-tab.at(-1)[a])?0:tab.length-1][b]:tab[0][b]}
+const scaleAt=yb=>lerpT(MS(),yb,0,1);
+function mirror(x,y){
+  if(y>=RV1){const yt=lerpT(MY(),y,0,1);return{x:CX-(x-CX)*scaleAt(y),y:yt}}
+  if(y<=RV0){const yb=lerpT(MY(),y,1,0);return{x:CX-(x-CX)/scaleAt(yb),y:yb}}
+  return{x:2*CX-x,y:RV0+RV1-y};
+}
+
+/* --- choix du mode --- */
+function chooseMode(){
+  modal(`<h3>Choisis ton combat</h3>
+   <div class="btns">
+    <button id="mOnline" style="font-size:17px">🌐 En ligne<br><small style="font-weight:600">Contre un vrai joueur au hasard</small></button>
+    <button id="mFriend" class="ghost" style="font-size:17px">👥 Défier un ami<br><small style="font-weight:600">Avec un code à partager</small></button>
+    <button id="mBot" class="ghost" style="font-size:17px">🤖 Contre l'ordinateur<br><small style="font-weight:600">Toujours disponible</small></button>
+    <button class="ghost" data-close>Annuler</button></div>`,box=>{
+    box.querySelector('#mBot').onclick=()=>{closeModal();findMatch()};
+    box.querySelector('#mOnline').onclick=()=>{closeModal();onlineQuick()};
+    box.querySelector('#mFriend').onclick=()=>{closeModal();friendMenu()};
+  });
+}
+function searchScreen(msg,sub,cancel){
+  const mm=$('#mm');mm.className='';mm.hidden=false;
+  mm.innerHTML=Array.from({length:9},(_,i)=>`<div class="cl" style="width:${180+i*37%160}px;height:${120+i*29%90}px;top:${(i*11)%90}%;animation-duration:${1.1+(i%4)*.35}s;animation-delay:-${i*.27}s"></div>`).join('')
+    +`<div class="msg">${msg}<small>${sub}</small></div>${cancel?'<button class="ghost" id="mmx" style="position:relative;margin-top:22px;background:#fff;color:#23407a">Annuler</button>':''}`;
+  const x=$('#mmx');if(x)x.onclick=()=>{netClose();mm.hidden=true};
+}
+function netFail(txt){
+  netClose();$('#mm').hidden=true;
+  modal(`<h3>En ligne</h3><p class="note">${txt}</p><div class="btns"><button id="fb">🤖 Jouer contre l'ordinateur</button><button class="ghost" data-close>Retour</button></div>`,b=>b.querySelector('#fb').onclick=()=>{closeModal();findMatch()});
+}
+function netClose(){
+  clearTimeout(NET.timer);try{NET.conn&&NET.conn.close()}catch(e){}try{NET.peer&&NET.peer.destroy()}catch(e){}try{NET.bc&&NET.bc.close()}catch(e){}
+  Object.assign(NET,{conn:null,peer:null,role:null,bc:null,foe:null,onmsg:null,started:0,other:null});
+}
+function bindConn(conn,role){
+  NET.conn=conn;NET.role=role;
+  conn.on('data',d=>netMsg(d));
+  conn.on('close',()=>netLost());conn.on('error',()=>netLost());
+  const hello=()=>NET.send({t:'hi',p:myCard()});if(conn.open)hello();else conn.on('open',hello);
+}
+function netLost(){
+  if(G&&G.net&&!G.over){G.cr=G.net==='host'?{p:3,e:G.cr.e}:{p:3,e:G.cr.e};G.over=true;hint('Ton adversaire s\'est déconnecté : victoire !')}
+  else if(!G&&!$('#mm').hidden)netFail('La connexion avec ton adversaire a été perdue.');
+}
+function netMsg(d){
+  if(d.t==='hi'){NET.foe=d.p;if(NET.role==='host'&&!NET.started){NET.started=1;netVS(S.map)}return}
+  if(d.t==='go'){netVS(d.map);return}
+  if(!G)return;
+  if(d.t==='snap'&&G.net==='guest')guestSnap(d);
+  else if(d.t==='play'&&G.net==='host'){
+    const dd=DEFS[d.id];if(!dd||G.aelx<dd.c||G.over)return;G.aelx-=dd.c;G._evo=d.evo||0;
+    if(dd.spell)cast('e',d.id,d.x,d.y,d.lv);else spawn('e',d.id,d.x,clamp(d.y,3.4,RV0-.2),d.lv);G._evo=0;
+  }
+  else if(d.t==='end'&&G.net==='guest'&&!G.over){G.cr={p:d.cr.e,e:d.cr.p};G.over=true}
+}
+function netVS(map){
+  clearTimeout(NET.timer);const f=NET.foe||{name:'Mage',av:0,tro:0,plv:1};
+  if(NET.role==='host')NET.send({t:'go',map});
+  const keep=S.map;if(map&&MAPS.some(m=>m.id===map))S.map=map;
+  const mm=$('#mm');mm.className='vs';mm.hidden=false;
+  mm.innerHTML=`<div class="vsrow"><div class="vsp">${avPic(S.avatar)}<b>${esc(S.name)}</b><span>Niveau ${S.plv} · 🏆 ${S.tro}</span></div>
+    <div class="vsx">VS</div><div class="vsp r">${avPic(AVATARS[f.av]?.[0]||'🧑‍🦱')}<b>${esc(f.name)}</b><span>Niveau ${f.plv} · 🏆 ${f.tro}</span></div></div>
+    <div class="vsarena">🌐 En ligne · ${mapOf(S.map).n}</div>`;
+  setTimeout(()=>{mm.hidden=true;mm.innerHTML='';startBattle({role:NET.role,foe:f});S.map=keep},1800);
+}
+/* --- partie rapide : le premier qui cherche attend dans le salon, le second le rejoint --- */
+async function onlineQuick(){
+  searchScreen('Recherche d\'un joueur en ligne…','Partie rapide · 🌐',true);
+  if(location.hash==='#localtest')return localQuick();
+  try{await loadPeer()}catch(e){return netFail('Impossible de charger le mode en ligne. Vérifie ta connexion Internet.')}
+  if(NET.peer)return;
+  const host=new Peer(LOBBY,PEERCFG);NET.peer=host;
+  host.on('open',()=>{NET.role='host';
+    host.on('connection',c=>{if(NET.conn){c.on('open',()=>c.close());return}try{host.disconnect()}catch(e){}bindConn(c,'host')});
+    NET.timer=setTimeout(()=>{if(!NET.conn)netFail('Personne n\'est en ligne pour le moment. Réessaie dans un instant, ou entraîne-toi contre l\'ordinateur.')},30000)});
+  host.on('error',err=>{
+    if(err.type==='unavailable-id'){try{host.destroy()}catch(e){}const g=new Peer(PEERCFG);NET.peer=g;
+      g.on('open',()=>{const c=g.connect(LOBBY,{reliable:true});bindConn(c,'guest');NET.timer=setTimeout(()=>{if(!NET.foe)netFail('Le joueur trouvé ne répond pas. Réessaie.')},12000)});
+      g.on('error',()=>{if(!NET.foe)netFail('Connexion impossible. Réessaie dans un instant.')})}
+    else if(!NET.foe)netFail('Le mode en ligne n\'est pas disponible ici (il marche sur le site du jeu et dans l\'appli).');
+  });
+}
+/* --- défier un ami avec un code --- */
+function friendMenu(){
+  modal(`<h3>Défier un ami</h3><p class="note">L'un crée un salon et donne le code, l'autre le rejoint.</p>
+   <div class="btns"><button id="fCreate">Créer un salon</button>
+   <div style="display:flex;gap:8px"><input id="fCode" maxlength="4" placeholder="CODE" style="flex:1;min-width:0;font:800 20px var(--body);text-align:center;letter-spacing:.2em;text-transform:uppercase;background:var(--table);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px"><button id="fJoin">Rejoindre</button></div>
+   <button class="ghost" data-close>Annuler</button></div>`,box=>{
+    box.querySelector('#fCreate').onclick=()=>{closeModal();friendHost()};
+    box.querySelector('#fJoin').onclick=()=>{const c=box.querySelector('#fCode').value.trim().toUpperCase();if(c.length!==4)return;closeModal();friendJoin(c)};
+  });
+}
+async function friendHost(){
+  const code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+  searchScreen(`Code du salon : <span style="letter-spacing:.15em;color:#ffe28a">${code}</span>`,'Donne ce code à ton ami pour qu\'il te rejoigne',true);
+  try{await loadPeer()}catch(e){return netFail('Impossible de charger le mode en ligne.')}
+  const h=new Peer(ROOM+code,PEERCFG);NET.peer=h;
+  h.on('open',()=>{NET.role='host';h.on('connection',c=>{if(NET.conn)return;bindConn(c,'host')})});
+  h.on('error',err=>{if(!NET.foe)netFail(err.type==='unavailable-id'?'Ce code est déjà pris, réessaie.':'Le mode en ligne n\'est pas disponible ici (il marche sur le site du jeu et dans l\'appli).')});
+}
+async function friendJoin(code){
+  searchScreen('Connexion au salon '+code+'…','👥 Défi entre amis',true);
+  try{await loadPeer()}catch(e){return netFail('Impossible de charger le mode en ligne.')}
+  const g=new Peer(PEERCFG);NET.peer=g;
+  g.on('open',()=>{bindConn(g.connect(ROOM+code,{reliable:true}),'guest');NET.timer=setTimeout(()=>{if(!NET.foe)netFail('Aucun salon trouvé avec ce code.')},12000)});
+  g.on('error',err=>{if(!NET.foe)netFail(err.type==='peer-unavailable'?'Aucun salon trouvé avec ce code.':'Connexion impossible.')});
+}
+/* --- transport de test local (deux onglets du même navigateur, adresse finissant par #localtest) --- */
+function localQuick(){
+  const bc=new BroadcastChannel('invoc-net');NET.bc=bc;NET.me=Math.random().toString(36).slice(2);
+  bc.onmessage=e=>{const m=e.data;
+    if(m.k==='seek'&&!NET.other){if(NET.me<m.from){NET.other=m.from;NET.role='host';bc.postMessage({k:'match',to:m.from,from:NET.me});NET.send({t:'hi',p:myCard()})}}
+    else if(m.k==='match'&&m.to===NET.me&&!NET.other){NET.other=m.from;NET.role='guest';NET.send({t:'hi',p:myCard()})}
+    else if(m.k==='msg'&&m.to===NET.me)netMsg(m.d)};
+  const ping=()=>{if(!NET.other&&NET.bc){bc.postMessage({k:'seek',from:NET.me});setTimeout(ping,500)}};ping();
+}
+
+/* --- hôte : envoie l'état ~15 fois par seconde --- */
+const r1=v=>Math.round(v*10)/10;
+function hostSend(now){
+  if(now-NET.last<66)return;NET.last=now;
+  const ents=G.ents.filter(e=>e.hp>0).map(e=>e.tower?[e.uid,'T'+e.kind,e.team,r1(e.x),r1(e.y),Math.ceil(e.hp),e.maxhp,e.active?1:0,r1(e.hitT||0)]
+    :[e.uid,e.id,e.team,r1(e.x),r1(e.y),Math.ceil(e.hp),Math.ceil(e.maxhp),e.fly?1:0,e.face,e.evo||0,e.fused?1:0,r1(Math.max(0,e.deploy)),r1(e.pw||0),e.slowT>0?1:0,e.stunT>0?1:0,r1(e.atkT||0),r1(e.hitT||0)]);
+  const nf=G.fx.filter(f=>!f._s).map(f=>{f._s=1;return f}),np=G.proj.filter(q=>!q._s).map(q=>{q._s=1;return{k:q.k,c:q.c,sx:q.sx,sy:q.sy,tx:q.tx,ty:q.ty,dur:q.dur}});
+  NET.send({t:'snap',ents,fx:nf,proj:np,ruins:G.ruins,cr:G.cr,tm:r1(G.t),elx:r1(G.aelx),ban:G.banner&&!G.banner._s?(G.banner._s=1,G.banner):null,sh:r1(G.shake),fl:r1(G.flash)});
+}
+/* --- invité : reconstruit l'arène retournée --- */
+function guestSnap(d){
+  if(G.over)return;
+  const seen=new Set(),byId=new Map(G.ents.map(e=>[e.uid,e]));
+  for(const a of d.ents){
+    const uid=a[0],team=a[2]==='p'?'e':'p',m=mirror(a[3],a[4]);seen.add(uid);let e=byId.get(uid);
+    if(a[1][0]==='T'){const kind=a[1].slice(1);
+      if(!e){e=tower(team,kind,m.x,m.y);e.uid=uid;G.ents.push(e)}
+      Object.assign(e,{tx:m.x,ty:m.y,hp:a[5],maxhp:a[6],active:!!a[7]});if(a[8]>0)e.hitT=a[8];
+    }else{
+      const D=DEFS[a[1]]||FUS[a[1]];if(!D)continue;
+      if(!e){e=unit(team,a[1],D,m.x,m.y,1,a[11]);e.uid=uid;e.x=m.x;e.y=m.y;G.ents.push(e)}
+      Object.assign(e,{tx:m.x,ty:m.y,hp:a[5],maxhp:a[6],fly:!!a[7],face:-a[8],evo:a[9],fused:!!a[10],deploy:a[11],pw:a[12],slowT:a[13]?1:0,stunT:a[14]?1:0});
+      if(a[15]>0)e.atkT=a[15];if(a[16]>0)e.hitT=a[16];
+    }
+  }
+  for(const e of G.ents)if(!seen.has(e.uid)&&e.hp>0){e.hp=0;e.dead=true;
+    if(e.tower){sfx('tower');vib(120);G.shake=14}else G.fx.push({type:'ghost',id:e.id,x:e.x,y:e.y,rad:e.rad,face:e.face,fly:e.fly,col:e.team==='p'?'#6fb7ff':'#ff6b6b',t:0,dur:.6})}
+  G.ents=G.ents.filter(e=>!e.dead);
+  const M=(o,kx,ky)=>{if(o[kx]!=null&&o[ky]!=null){const m=mirror(o[kx],o[ky]);o[kx]=m.x;o[ky]=m.y}};
+  for(const f of d.fx){M(f,'x','y');M(f,'x0','y0');M(f,'x1','y1');if(f.ang!=null)f.ang+=Math.PI;if(f.face)f.face=-f.face;if(f.type==='num')sfx('hit');G.fx.push(f)}
+  for(const q of d.proj){M(q,'sx','sy');M(q,'tx','ty');q.x=q.sx;q.y=q.sy;q.t=0;q.hit=()=>{};G.proj.push(q)}
+  G.ruins=d.ruins.map(r=>{const m=mirror(r.x,r.y);return{...r,team:r.team==='p'?'e':'p',x:m.x,y:m.y}});
+  G.cr={p:d.cr.e,e:d.cr.p};G.t=d.tm;G.elx=d.elx;G.shake=Math.max(G.shake,d.sh);G.flash=Math.max(G.flash,d.fl);
+  if(d.ban){G.banner={...d.ban,team:d.ban.team==='p'?'e':'p',t:0};sfx('ult')}
+}
+function guestTick(dt){
+  for(const e of G.ents){
+    if(e.tx==null)continue;const dx=e.tx-e.x,dy=e.ty-e.y,dd=Math.hypot(dx,dy),k=Math.min(1,dt*12);
+    if(dd>3){e.x=e.tx;e.y=e.ty}else{e.x+=dx*k;e.y+=dy*k}
+    if(dd>.02){e.walk+=dt;e.mv=.15}else e.mv=Math.max(0,(e.mv||0)-dt);
+    e.atkT=Math.max(0,(e.atkT||0)-dt);e.hitT=Math.max(0,(e.hitT||0)-dt);e.turnT=Math.max(0,(e.turnT||0)-dt);
+  }
+  for(const q of G.proj){q.t+=dt;const k=Math.min(1,q.t/q.dur);q.x=q.sx+(q.tx-q.sx)*k;q.y=q.sy+(q.ty-q.sy)*k-(q.k==='potion'?Math.sin(k*Math.PI)*1.6:0);if(q.t>=q.dur&&!q.done){q.done=1;burst(q.tx,q.ty,q.c,6,2)}}
+  G.proj=G.proj.filter(q=>!q.done);
+  for(const q of G.parts){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=q.g*dt;q.vx*=.96}
+  G.parts=G.parts.filter(q=>q.life>0);G.fx=G.fx.filter(f=>(f.t+=dt)<f.dur);G.flash=Math.max(0,G.flash-dt);
+}
+
 /* ---------- Recherche d'adversaire puis VS ---------- */
 function findMatch(){
   goFS();
   const mm=$('#mm');mm.className='';mm.hidden=false;
   mm.innerHTML=Array.from({length:9},(_,i)=>`<div class="cl" style="width:${180+i*37%160}px;height:${120+i*29%90}px;top:${(i*11)%90}%;animation-duration:${1.1+(i%4)*.35}s;animation-delay:-${i*.27}s"></div>`).join('')
-    +`<div class="msg">Recherche d'un adversaire…<small>${mapOf(S.map).n}</small></div>`;
+    +`<div class="msg">Recherche d'un adversaire…<small>🤖 Entraînement · ${mapOf(S.map).n}</small></div>`;
   setTimeout(()=>{
     mm.className='vs';
     mm.innerHTML=`<div class="vsrow"><div class="vsp">${avPic(S.avatar)}<b>${esc(S.name)}</b><span>Niveau ${S.plv} · 🏆 ${S.tro}</span></div>
@@ -785,18 +965,18 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
-const VERSION='1.5';
+const VERSION='1.6';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];
 function boot(){
   const el=$('#boot');if(!el)return;let k=0,ti=Math.floor(Math.random()*TIPS.length);
   $('#boottip').textContent='💡 '+TIPS[ti];
-  const tipT=setInterval(()=>{ti=(ti+1)%TIPS.length;$('#boottip').textContent='💡 '+TIPS[ti]},2600);
+  const tipT=setInterval(()=>{const t=$('#boottip');if(!t)return clearInterval(tipT);ti=(ti+1)%TIPS.length;t.textContent='💡 '+TIPS[ti]},2600);
   const t0=Date.now(),tick=setInterval(()=>{
     const loaded=Object.keys(PIC).length/ART.length,time=(Date.now()-t0)/1800;
     k=Math.min(1,Math.min(time,.15+loaded*.85)+(Date.now()-t0>6000?1:0));
-    $('#bootbar').style.width=(k*100)+'%';
+    const bb=$('#bootbar');if(!bb)return clearInterval(tick);bb.style.width=(k*100)+'%';
     if(k>=1){clearInterval(tick);el.classList.add('ready')}
   },80);
   el.addEventListener('click',()=>{if(!el.classList.contains('ready'))return;clearInterval(tipT);goFS();el.classList.add('out');setTimeout(()=>el.remove(),550);layoutVillage();setTimeout(afterBoot,650)});
@@ -1014,9 +1194,10 @@ let G=null,raf=0,last=0,G_map=null;
 const cv=$('#cv'),ctx=cv.getContext('2d');
 let SC=20;
 
+let UID=0;
 function tower(team,kind,x,y){
   const k=kind==='king';
-  return{tower:true,kind,team,x,y,rad:k?1.6:1.25,hp:k?2600:1500,maxhp:k?2600:1500,dmg:k?65:55,rng:k?7:7.5,hit:k?1:.8,cd:0,air:true,active:!k,e:k?'👑':'🏹'};
+  return{uid:++UID,tower:true,kind,team,x,y,rad:k?1.6:1.25,hp:k?2600:1500,maxhp:k?2600:1500,dmg:k?65:55,rng:k?7:7.5,hit:k?1:.8,cd:0,air:true,active:!k,e:k?'👑':'🏹'};
 }
 /* ---------- Plein écran ---------- */
 const isStandalone=()=>NATIVE||window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -1031,14 +1212,15 @@ function installTip(){
   if(isIOS())return`<div class="install">📲 <b>Jouer en plein écran :</b> touche le bouton <b>Partager</b> de Safari, puis <b>« Sur l'écran d'accueil »</b>. Le jeu s'ouvrira comme une vraie appli.</div>`;
   return`<div class="install">📲 <b>Astuce :</b> menu <b>⋮</b> du navigateur → <b>« Ajouter à l'écran d'accueil »</b> pour jouer en plein écran comme une appli.</div>`;
 }
-function startBattle(){
+function startBattle(online){
   goFS();setMood('battle');document.body.classList.add('battle');
   const deck=shuffle([...S.deck]),adeck=shuffle([...new Set([...STARTER,...HEROES,...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/100)])]).slice(0,8);G_map=mapOf(S.map);
   G={banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
      ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:S.played?0:7,aiK:S.played<3?1.5:S.ls>=3?1.35:S.ls>=2?1.2:1,eLv:enemyLv()};
-  G.ents.push(tower('p','king',CX,29.04),tower('p','princess',3.94,24.57),tower('p','princess',16.17,24.57),tower('e','king',CX,5.21),tower('e','princess',4.72,8.19),tower('e','princess',15.28,8.19));
-  $('#ename').innerHTML=foePic(foe,'foeimg')+esc(foe[0]);
-  $('#pname2').innerHTML=avPic(S.avatar,'meimg')+esc(S.name);$('#lvls').textContent=`Cartes adverses niv. ${G.eLv}`;
+  if(online){G.net=online.role;G.foeNet=online.foe;G.aiK=1;G.ai=999;if(online.role==='guest'){G.ents=[];G.snap=null}}
+  if(!online||online.role==='host')G.ents.push(tower('p','king',CX,29.04),tower('p','princess',3.94,24.57),tower('p','princess',16.17,24.57),tower('e','king',CX,5.21),tower('e','princess',4.72,8.19),tower('e','princess',15.28,8.19));
+  $('#ename').innerHTML=online?avPic(AVATARS[online.foe.av]?.[0]||'🧑‍🦱','foeimg')+esc(online.foe.name)+' 🌐':foePic(foe,'foeimg')+esc(foe[0]);
+  $('#pname2').innerHTML=avPic(S.avatar,'meimg')+esc(S.name);$('#lvls').textContent=online?'Partie en ligne':`Cartes adverses niv. ${G.eLv}`;
   go('battle');renderHand();resize();
   hint(S.tut?'Touchez une carte, puis votre moitié de l’arène pour invoquer.':'Détruisez le Roi adverse 👑 pour gagner 3 couronnes.');
   last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
@@ -1055,11 +1237,11 @@ function resize(){
 addEventListener('resize',resize);
 
 function unit(team,id,d,x,y,m,deploy){
-  return{team,id,x:clamp(x,.5,W-.5),y,rad:d.rad,hp:d.hp*m,maxhp:d.hp*m,dmg:d.dmg*m,rng:d.rng,hit:d.hit,cd:0,spd:d.spd,
+  return{uid:++UID,team,id,x:clamp(x,.5,W-.5),y,rad:d.rad,hp:d.hp*m,maxhp:d.hp*m,dmg:d.dmg*m,rng:d.rng,hit:d.hit,cd:0,spd:d.spd,
     fly:!!d.fly,air:d.air,bld:!!d.bld,splash:d.splash||0,e:d.e,deploy,walk:Math.random()*3,seed:Math.random()*10,mv:0,sumId:d.sumId||'squelettes',face:team==='p'?1:-1,atkT:0,hitT:0,boom:!!d.boom,heal:(d.heal||0)*m,summon:d.summon||0,tick:0,lv:m};
 }
 function spawn(team,id,x,y,lv){
-  const d=DEFS[id],ev=team==='p'?evoOf(id):0,m=lvMult(lv)*evoMult(ev);
+  const d=DEFS[id],ev=team==='p'?evoOf(id):(G._evo||0),m=lvMult(lv)*evoMult(ev);
   // fusion : la carte est posée sur une troupe alliée compatible
   const mate=G.ents.filter(e=>e.team===team&&!e.tower&&e.hp>0&&!e.fused&&fusionOf(id,e.id)&&Math.hypot(e.x-x,e.y-y)<1.8)
     .sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
@@ -1078,7 +1260,7 @@ function spawn(team,id,x,y,lv){
   }
 }
 function cast(team,id,x,y,lv){
-  const d=DEFS[id],m=lvMult(lv)*evoMult(team==='p'?evoOf(id):0);
+  const d=DEFS[id],m=lvMult(lv)*evoMult(team==='p'?evoOf(id):(G._evo||0));
   const hit=()=>G.ents.forEach(e=>{if(e.team!==team&&e.hp>0&&Math.hypot(e.x-x,e.y-y)<=d.area+e.rad*.5)hurt(e,e.tower?d.dmg*m*.4:d.dmg*m)});
   if(id==='boule'){
     G.fx.push({type:'meteor',x,y,t:0,dur:.55});G.fx.push({type:'mark',x,y,r:d.area,c:'#c77dff',t:0,dur:.55});
@@ -1292,7 +1474,7 @@ function update(dt){
   G.timers=G.timers.filter(tm=>!tm.done);
   G.flash=Math.max(0,G.flash-dt);
   G.fx=G.fx.filter(f=>(f.t+=dt)<f.dur);
-  ai(dt);
+  if(!G.net)ai(dt);
   if(G.t<=0)G.over=true;
 }
 
@@ -1575,7 +1757,8 @@ cv.addEventListener('pointerdown',e=>{
   if(d.c>G.elx)return hint(`Pas assez d’élixir (${d.c} nécessaires).`);
   if(!d.spell&&!openZones().some(z=>x>=z.x0&&x<=z.x1&&y>=z.y0))return hint('Invoquez dans la zone bleue, de votre côté.');
   G.elx-=d.c;
-  if(d.spell){cast('p',id,x,y,S.cards[id].lv);G.st.spell++;sfx('spell')}else{spawn('p',id,x,y,S.cards[id].lv);G.st.summon++;sfx('summon')}
+  if(G.net==='guest'){const m=mirror(x,y);NET.send({t:'play',id,lv:S.cards[id].lv,evo:evoOf(id),x:m.x,y:m.y});if(d.spell)G.st.spell++;else G.st.summon++;sfx(d.spell?'spell':'summon')}
+  else if(d.spell){cast('p',id,x,y,S.cards[id].lv);G.st.spell++;sfx('spell')}else{spawn('p',id,x,y,S.cards[id].lv);G.st.summon++;sfx('summon')}
   vib(12);
   G.queue.push(id);G.hand[G.sel]=G.next;G.next=G.queue.shift();G.sel=null;
   if(S.tut){S.tut=false;persist()}
@@ -1584,10 +1767,12 @@ cv.addEventListener('pointerdown',e=>{
 function loop(now){
   if(!G)return;
   const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;
-  if($('#ov').hidden&&!G.over){update(dt*(G.slowT>0?.3:1));G.slowT=Math.max(0,G.slowT-dt)}
+  if(G.net==='guest')guestTick(dt);
+  else if(($('#ov').hidden||G.net)&&!G.over){update(dt*(G.slowT>0?.3:1));G.slowT=Math.max(0,G.slowT-dt)}
+  if(G.net==='host')hostSend(now);
   G.shake*=.86;if(G.banner&&(G.banner.t+=dt)>G.banner.dur)G.banner=null;
   draw();if(G.flash>0){ctx.fillStyle=`rgba(255,250,220,${G.flash*1.6})`;ctx.fillRect(0,0,W*SC,H*SC)}hud();
-  if(G.over&&!G.ended){G.ended=true;setTimeout(endBattle,700)}
+  if(G.over&&!G.ended){G.ended=true;if(G.net==='host')NET.send({t:'end',cr:G.cr});setTimeout(endBattle,700)}
   raf=requestAnimationFrame(loop);
 }
 function endBattle(){
@@ -1622,7 +1807,7 @@ function endBattle(){
       const x=box.querySelector('#x2');if(x)x.onclick=()=>fakeAd(()=>{S.gold+=gold*2;finish()});
     });
 }
-function finish(){document.body.classList.remove('battle');foe=rnd(FOES);persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
+function finish(){document.body.classList.remove('battle');if(G&&G.net)netClose();foe=rnd(FOES);persist();closeModal();cancelAnimationFrame(raf);G=null;foe=rnd(FOES);go('home')}
 function fakeAd(done){
   let t=3;
   const tick=()=>{

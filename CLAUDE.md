@@ -32,6 +32,10 @@ Tous les autres personnages : table `NEWREQ` (gratuit au niveau de joueur `lv` o
 Sons/musique synthétisés (Web Audio, `sfx()`, `setMood()`), vibrations, réglages dans le Profil. Coffres à minuteur : 4 emplacements
 (`S.slots`, `CTYPES`, un seul déverrouillage à la fois, ouverture immédiate en Invoks). Difficulté adaptative (`G.aiK` : 3 premiers
 combats et séries de défaites).
+Modes : COMBAT ouvre `chooseMode()` → En ligne (partie rapide, salon `duelinvoc-lobby-v1`), Défier un ami (code 4 lettres,
+`duelinvoc-room-XXXX`), Contre l'ordinateur. En ligne = PeerJS/WebRTC (`vendor/peerjs.min.js`, serveur de signalisation gratuit PeerJS) :
+l'hôte simule (`hostSend`, ~15 états/s), l'invité affiche l'arène retournée (`mirror()`, `guestSnap`, `guestTick`) et envoie ses invocations.
+Test local à deux onglets : adresse terminée par `#localtest` (BroadcastChannel). Ne marche pas dans l'artifact Claude (WebRTC bloqué).
 Combat temps réel (3 tours/camp, élixir, deck de 8), 26 personnages avec attaque + pouvoir ultime,
 4 fusions, 6 arènes, niveau joueur, trophées, Éveil (3 évolutions), monnaie premium « Invok »,
 boutique (personnages, coffres, packs, effets d'invocation, bonus), coffre du jour, 3 quêtes/jour,
