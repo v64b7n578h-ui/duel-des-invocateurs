@@ -1,0 +1,18 @@
+{
+  "name": "duel-des-invocateurs",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Duel des Invocateurs — jeu mobile de duels magiques",
+  "scripts": {
+    "build": "python3 tools/build.py && python3 tools/build_www.py",
+    "sync": "npm run build && npx cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "appId": "io.github.v64b7n578hui.invocateurs",
+  "appName": "Duel des Invocateurs",
+  "webDir": "www",
+  "backgroundColor": "#120e1c",
+  "android": { "backgroundColor": "#120e1c" },
+  "ios": { "backgroundColor": "#120e1c", "contentInset": "never" }
+}

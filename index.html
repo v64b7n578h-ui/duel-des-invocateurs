@@ -447,6 +447,8 @@ function seasonClaimable(){
   return dailyQuests().some(q=>q.p>=QUESTS.find(x=>x.id===q.id).goal&&!q.c);
 }
 function navDots(){const b=document.querySelector('#nav [data-go="season"]');if(!b)return;let d=b.querySelector('.dot');const on=seasonClaimable();if(on&&!d){d=document.createElement('i');d.className='dot';b.appendChild(d)}if(!on&&d)d.remove()}
+/* true quand le jeu tourne dans l'appli Android / iPhone (Capacitor) */
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 const xpNeed=lv=>100+lv*60;
 const STARTER=['chevalier','archere','gobelins','squelettes','goule','boule']; // les 6 cartes de base, données à tous
 /* cartes qu'on peut trouver dans les coffres, selon l'arène */
@@ -753,9 +755,9 @@ function renderShop(){
   <div class="offers">${BOOSTS.map(b=>`<div class="offer"><div class="ic">${b.ic}</div><div class="tx"><b>${b.n}</b><span>${b.txt}${S[b.id]?` · encore ${S[b.id]} actif${S[b.id]>1?'s':''}`:''}</span></div><button data-boost="${b.id}" ${S.gems<b.inv?'disabled':''}>${CI} ${b.inv}</button></div>`).join('')}</div>
   <h4>Coffres</h4>
   <div class="offers">${CHESTS.map(c=>{const ok=c.cost.gold?S.gold>=c.cost.gold:S.gems>=c.cost.gems;return`<div class="offer"><div class="ic">${c.ic}</div><div class="tx"><b>${c.n}</b><span>${c.txt}</span></div><button data-chest="${c.id}" ${ok?'':'disabled'}>${c.cost.gold?'🪙 '+c.cost.gold:CI+' '+c.cost.gems}</button></div>`}).join('')}</div>
-  <h4>Invoks ${CI}</h4>
+  ${NATIVE?`<h4>Invoks ${CI}</h4><p class="note">Gagne des Invoks en montant de niveau, avec le coffre du jour et le Grimoire de saison.</p>`:`  <h4>Invoks ${CI}</h4>
   <div class="offers">${GEMPACKS.map(([g,pr,ic,tag])=>`<div class="offer iap"><div class="ic" style="width:68px;height:68px;background:radial-gradient(circle,#3b2d5e,#120e1c)"><img src="art/${ic}.webp" alt="" style="object-fit:contain"></div><div class="tx"><b>${g} Invoks</b>${tag?`<span style="color:var(--gold);font-weight:700">${tag}</span><br>`:''}<span>Achat intégré · démo : gratuit ici</span></div><button data-gems="${g}">${pr}</button></div>`).join('')}</div>
-  <p class="note" style="margin-top:10px">Les Invoks se gagnent aussi en montant de niveau et dans le coffre du jour.</p>`;
+  <p class="note" style="margin-top:10px">Les Invoks se gagnent aussi en montant de niveau et dans le coffre du jour.</p>`}`;
 }
 $('#s-shop').addEventListener('click',e=>{
   const g=e.target.closest('[data-gems]');if(g){S.gems+=+g.dataset.gems;persist();setTop();renderShop();return}
@@ -909,7 +911,7 @@ function tower(team,kind,x,y){
   return{tower:true,kind,team,x,y,rad:k?1.6:1.25,hp:k?2600:1500,maxhp:k?2600:1500,dmg:k?65:55,rng:k?7:7.5,hit:k?1:.8,cd:0,air:true,active:!k,e:k?'👑':'🏹'};
 }
 /* ---------- Plein écran ---------- */
-const isStandalone=()=>window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isStandalone=()=>NATIVE||window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const canFS=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)&&!isStandalone();
 const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
 function goFS(){if(!canFS()||inFS())return;const el=document.documentElement;
@@ -1501,7 +1503,7 @@ function endBattle(){
   modal(`<h3>${title}</h3><div class="big">👑 ${p} – ${e}</div><div class="note">🏆 ${dT>=0?'+':''}${dT} trophées</div>
     ${win?`<div class="label" style="margin-top:12px">Coffre de victoire</div><div class="reveal">${loot.map(([id,n,nw],i)=>`<div class="w" style="animation-delay:${i*.2}s">${cardHTML(id,{lv:S.cards[id].lv})}<span class="tag" ${nw?'style="color:var(--ok)"':''}>${nw?'NOUVELLE !':'+'+n}</span></div>`).join('')}</div>`:''}
     <div class="big">+${gold} 🪙</div><div class="note">+${spGain} points de saison 📖 · +${xpGain} XP${xpMul>1?' (parchemin ×2)':''}</div>${upHTML}${newAv?'<div class="note" style="color:var(--gold)">🎭 Nouvel avatar débloqué dans votre profil !</div>':''}
-    <div class="btns">${win?`<button id="x2">📺 Doubler l'or : +${gold*2} 🪙</button>`:''}<button class="${win?'ghost':''}" id="take">${win?`Prendre ${gold} 🪙`:'Continuer'}</button></div>`,
+    <div class="btns">${win&&!NATIVE?`<button id="x2">📺 Doubler l'or : +${gold*2} 🪙</button>`:''}<button class="${win?'ghost':''}" id="take">${win?`Prendre ${gold} 🪙`:'Continuer'}</button></div>`,
     box=>{
       box.querySelector('#take').onclick=()=>{S.gold+=gold;finish()};
       const x=box.querySelector('#x2');if(x)x.onclick=()=>fakeAd(()=>{S.gold+=gold*2;finish()});
