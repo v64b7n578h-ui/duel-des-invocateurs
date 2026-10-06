@@ -15,6 +15,13 @@ avec des personnages illustrés générés sur ChatGPT. Réponds en français, s
 - `sources/images-originales/` : images ChatGPT d'origine (JPG haute qualité).
 - `sources/prompts-personnages.md` : prompts utilisés.
 
+## Applis mobiles (Capacitor 8)
+- `capacitor.config.json` (appId `io.github.v64b7n578hui.invocateurs`), projets natifs `android/` et `ios/`.
+- `npm run build` : régénère `index.html` puis `www/` (copie embarquée dans l'appli). `npx cap sync` copie `www/` dans les projets natifs.
+- `.github/workflows/applis.yml` : à chaque push, GitHub fabrique l'APK Android de test (artefact) et vérifie la compilation iPhone.
+- Dans l'appli (`NATIVE` vrai) : les faux packs en € et la fausse pub sont masqués (achats réels pas encore branchés).
+- `privacy.html` : politique de confidentialité (URL publique pour les stores). `store/fiche-store.md` : textes des stores.
+
 ## Ce qui existe dans le jeu
 Écran de chargement, accueil « citadelle » façon jeu de village (HUD niveau/ressources, gros boutons COMBAT/BOUTIQUE,
 château qui produit de l'or hors ligne, bulle à récolter), recherche d'adversaire + écran VS.
