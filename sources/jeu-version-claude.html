@@ -280,6 +280,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 .nextc .card{transform:scale(.9);pointer-events:none}
 .hand{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .hand .card.off{filter:grayscale(.7) brightness(.55)}
+.cdv{position:absolute;inset:3px;border-radius:7px;z-index:2;display:grid;place-items:center;font:900 26px var(--body);color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000;background:conic-gradient(#000b var(--p),#0000 0);pointer-events:none}
 .hand .card.sel{transform:translateY(-8px);box-shadow:0 0 0 3px var(--gold),0 0 18px var(--gold)}
 .elx{position:relative;height:18px;border-radius:9px;background:#2a1a33;overflow:hidden;margin-top:6px;border:1px solid #5a2d63}
 .elx i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#a630b8,var(--elixir));transition:width .1s linear}
@@ -335,7 +336,7 @@ canvas{display:block;border-radius:10px;touch-action:none;max-width:100%}
 <div id="ov" class="ov" hidden></div>
 <div id="mm" hidden></div>
 <div id="boot"><div class="bg"></div>
-  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.6</div></div>
+  <div class="logo-b"><img src="art/coin.webp" alt=""><h1>Duel des<br>Invocateurs</h1><div class="sub">L'arène des Arcanes · v1.7</div></div>
   <div class="tip" id="boottip"></div><div class="pbar"><i id="bootbar"></i></div><div class="tap">Touchez pour jouer</div></div>
 
 <script>
@@ -751,7 +752,7 @@ function tutorial(i){
 const HELP=[
  {ic:'⚔️',t:'Le but du combat',b:'Chaque camp a 2 tours d\'archers et 1 château. Détruis une tour : 1 couronne. Détruis le château : 3 couronnes et victoire immédiate. Un combat dure 3 minutes, et l\'élixir va 2 fois plus vite pendant la dernière minute.'},
  {ic:'🌐',t:'En ligne ou contre l\'ordi',b:'Touche COMBAT puis choisis : En ligne (un vrai joueur au hasard), Défier un ami (avec un code de 4 lettres), ou Contre l\'ordinateur (toujours disponible, même sans Internet).'},
- {ic:'💧',t:'Invoquer',b:'Touche une carte de ta main, puis la zone bleue de ton côté de l\'arène. Chaque carte coûte de l\'élixir (le chiffre rose). L\'élixir se recharge tout seul jusqu\'à 10. Les sorts se lancent n\'importe où.'},
+ {ic:'💧',t:'Invoquer',b:'Après chaque invocation, il faut attendre 2 s avant la suivante, et la carte jouée se recharge (2 s + 1 s par point d\'élixir) : choisis bien le moment ! Touche une carte de ta main, puis la zone bleue de ton côté de l\'arène. Chaque carte coûte de l\'élixir (le chiffre rose). L\'élixir se recharge tout seul jusqu\'à 10. Les sorts se lancent n\'importe où.'},
  {ic:'✨',t:'Pouvoirs ultimes',b:'Sous chaque personnage, un anneau doré se remplit à chaque attaque. Quand il est plein, son pouvoir ultime se déclenche tout seul : pluie d\'étoiles, séisme, ruée, souffle…'},
  {ic:'🔀',t:'Les fusions',b:'Invoque une carte directement sur une de tes troupes compatibles : elles fusionnent en un monstre légendaire. Les 4 recettes sont dans l\'onglet Deck.'},
  {ic:'🔓',t:'Débloquer des personnages',b:'Tu commences avec 6 cartes de base et 2 héros choisis. Chaque autre personnage se débloque GRATUITEMENT à un niveau de joueur, ou TOUT DE SUITE avec des Invoks (Deck ou Boutique).'},
@@ -834,7 +835,7 @@ function netMsg(d){
   if(!G)return;
   if(d.t==='snap'&&G.net==='guest')guestSnap(d);
   else if(d.t==='play'&&G.net==='host'){
-    const dd=DEFS[d.id];if(!dd||G.aelx<dd.c||G.over)return;G.aelx-=dd.c;G._evo=d.evo||0;
+    const dd=DEFS[d.id];if(!dd||G.aelx<dd.c||G.over||(G.agcd||0)>.4)return;useCD(d.id,'e');G.aelx-=dd.c;G._evo=d.evo||0;
     if(dd.spell)cast('e',d.id,d.x,d.y,d.lv);else spawn('e',d.id,d.x,clamp(d.y,3.4,RV0-.2),d.lv);G._evo=0;
   }
   else if(d.t==='end'&&G.net==='guest'&&!G.over){G.cr={p:d.cr.e,e:d.cr.p};G.over=true}
@@ -965,7 +966,7 @@ function findMatch(){
 }
 
 /* ---------- Écran de chargement ---------- */
-const VERSION='1.6';
+const VERSION='1.7';
 const TIPS=['Pose une carte sur une de tes troupes compatibles pour déclencher une fusion.','L\'anneau doré sous un personnage se remplit : quand il est plein, son pouvoir ultime part !',
  'Le Dragon de Givre ralentit tout ce qu\'il touche.','Ton château produit de l\'or même quand tu ne joues pas.','Les quêtes du jour font avancer ton Grimoire de saison.',
  'Détruis le château adverse pour gagner 3 couronnes d\'un coup.','Éveille tes personnages pour les rendre plus forts et plus beaux.'];
@@ -1215,7 +1216,7 @@ function installTip(){
 function startBattle(online){
   goFS();setMood('battle');document.body.classList.add('battle');
   const deck=shuffle([...S.deck]),adeck=shuffle([...new Set([...STARTER,...HEROES,...Object.keys(NEWREQ).filter(id=>NEWREQ[id].lv<=1+S.tro/100)])]).slice(0,8);G_map=mapOf(S.map);
-  G={banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
+  G={gcd:0,agcd:0,ccd:{},accd:{},banner:null,slowT:0,shake:0,st:{summon:0,spell:0,towers:0,fus:0},t:180,ents:[],proj:[],fx:[],parts:[],ruins:[],timers:[],flash:0,elx:5,aelx:5,hand:deck.slice(0,4),queue:deck.slice(5),next:deck[4],
      ahand:adeck.slice(0,4),aqueue:adeck.slice(5),anext:adeck[4],sel:null,over:false,cr:{p:0,e:0},ai:S.played?0:7,aiK:S.played<3?1.5:S.ls>=3?1.35:S.ls>=2?1.2:1,eLv:enemyLv()};
   if(online){G.net=online.role;G.foeNet=online.foe;G.aiK=1;G.ai=999;if(online.role==='guest'){G.ents=[];G.snap=null}}
   if(!online||online.role==='host')G.ents.push(tower('p','king',CX,29.04),tower('p','princess',3.94,24.57),tower('p','princess',16.17,24.57),tower('e','king',CX,5.21),tower('e','princess',4.72,8.19),tower('e','princess',15.28,8.19));
@@ -1479,16 +1480,21 @@ function update(dt){
 }
 
 /* ---------- IA adverse ---------- */
+/* Temps de recharge : 2 s entre deux invocations, et chaque carte se recharge 2 s + 1 s par point d'élixir */
+const GCD=2,cardCD=id=>2+DEFS[id].c;
+function cdLeft(id,side){const g=side==='e'?G.agcd:G.gcd,c=(side==='e'?G.accd:G.ccd)[id]||0;return Math.max(g||0,c)}
+function useCD(id,side){if(side==='e'){G.agcd=GCD;G.accd[id]=cardCD(id)}else{G.gcd=GCD;G.ccd[id]=cardCD(id)}}
+function tickCD(dt){G.gcd=Math.max(0,(G.gcd||0)-dt);G.agcd=Math.max(0,(G.agcd||0)-dt);for(const k in G.ccd)G.ccd[k]=Math.max(0,G.ccd[k]-dt);for(const k in G.accd)G.accd[k]=Math.max(0,G.accd[k]-dt)}
 function aiPlay(i,x,y){
   const id=G.ahand[i],d=DEFS[id];
-  G.aelx-=d.c;
+  G.aelx-=d.c;useCD(id,'e');
   if(d.spell)cast('e',id,x,y,G.eLv);else spawn('e',id,clamp(x,...xb(4)),clamp(y,4,RV0-.3),G.eLv);
   G.aqueue.push(id);G.ahand[i]=G.anext;G.anext=G.aqueue.shift();
 }
 function ai(dt){
   if((G.ai-=dt)>0)return;
   G.ai=(.7+Math.random()*.6)*(G.aiK||1);
-  const can=G.ahand.map((id,i)=>({id,i,d:DEFS[id]})).filter(o=>o.d.c<=G.aelx);
+  const can=G.ahand.map((id,i)=>({id,i,d:DEFS[id]})).filter(o=>o.d.c<=G.aelx&&cdLeft(o.id,'e')<=0);
   if(!can.length)return;
   const threats=G.ents.filter(e=>e.team==='p'&&!e.tower&&e.y<RV1+1.5&&e.deploy<=0);
   const sp=can.find(o=>o.d.spell);
@@ -1738,7 +1744,9 @@ function hud(){
   if(sec!==lastSec){lastSec=sec;const t=$('#timer');t.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`+(sec<=60?' ×2':'');t.classList.toggle('x2',sec<=60)}
   $('#ecr').textContent='👑 '+G.cr.p;$('#pcr').textContent='👑 '+G.cr.e;
   $('#elxbar').style.width=G.elx*10+'%';$('#elxn').textContent=Math.floor(G.elx);
-  document.querySelectorAll('#hand .card').forEach((c,i)=>c.classList.toggle('off',DEFS[G.hand[i]].c>G.elx));
+  document.querySelectorAll('#hand .card').forEach((c,i)=>{const id=G.hand[i],cd=cdLeft(id,'p'),tot=Math.max(cardCD(id),GCD);
+    c.classList.toggle('off',DEFS[id].c>G.elx||cd>0);let o=c.querySelector('.cdv');
+    if(cd>0){if(!o){o=document.createElement('div');o.className='cdv';c.appendChild(o)}o.style.setProperty('--p',(cd/tot*100).toFixed(1)+'%');o.textContent=Math.ceil(cd)}else if(o)o.remove()});
 }
 function renderHand(){
   $('#hand').innerHTML=G.hand.map((id,i)=>cardHTML(id,{lv:S.cards[id].lv,cls:G.sel===i?'sel':'',attr:`data-i="${i}"`})).join('');
@@ -1754,9 +1762,10 @@ cv.addEventListener('pointerdown',e=>{
   if(!G||G.over||G.sel===null)return;
   const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
   const id=G.hand[G.sel],d=DEFS[id];
+  if(cdLeft(id,'p')>0)return hint(`${d.n} se recharge… encore ${Math.ceil(cdLeft(id,'p'))} s`);
   if(d.c>G.elx)return hint(`Pas assez d’élixir (${d.c} nécessaires).`);
   if(!d.spell&&!openZones().some(z=>x>=z.x0&&x<=z.x1&&y>=z.y0))return hint('Invoquez dans la zone bleue, de votre côté.');
-  G.elx-=d.c;
+  G.elx-=d.c;useCD(id,'p');
   if(G.net==='guest'){const m=mirror(x,y);NET.send({t:'play',id,lv:S.cards[id].lv,evo:evoOf(id),x:m.x,y:m.y});if(d.spell)G.st.spell++;else G.st.summon++;sfx(d.spell?'spell':'summon')}
   else if(d.spell){cast('p',id,x,y,S.cards[id].lv);G.st.spell++;sfx('spell')}else{spawn('p',id,x,y,S.cards[id].lv);G.st.summon++;sfx('summon')}
   vib(12);
@@ -1770,6 +1779,7 @@ function loop(now){
   if(G.net==='guest')guestTick(dt);
   else if(($('#ov').hidden||G.net)&&!G.over){update(dt*(G.slowT>0?.3:1));G.slowT=Math.max(0,G.slowT-dt)}
   if(G.net==='host')hostSend(now);
+  if(!G.over)tickCD(dt);
   G.shake*=.86;if(G.banner&&(G.banner.t+=dt)>G.banner.dur)G.banner=null;
   draw();if(G.flash>0){ctx.fillStyle=`rgba(255,250,220,${G.flash*1.6})`;ctx.fillRect(0,0,W*SC,H*SC)}hud();
   if(G.over&&!G.ended){G.ended=true;if(G.net==='host')NET.send({t:'end',cr:G.cr});setTimeout(endBattle,700)}
